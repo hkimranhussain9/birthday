@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Surprise for SwAti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=DM+Sans:wght@400;500;600;700&family=Sacramento&display=swap" rel="stylesheet">
+<style>
+/* ============ STYLE.CSS ============ */
+:root{--ink:#25191d;--wine:#7b3944;--rose:#b85f68;--blush:#f2c6c4;--cream:#fff8ed;--paper:#f7ead7;--gold:#d6b48c;--muted:#7b6969;--safe-bottom:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+html{background:var(--ink);overflow-x:hidden;-webkit-text-size-adjust:100%}
+body{margin:0;color:var(--ink);font-family:"DM Sans",-apple-system,BlinkMacSystemFont,sans-serif;background:var(--cream);min-width:320px;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit}button{color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid rgba(184,95,104,.45);outline-offset:2px}
+canvas{display:block}
+.hidden{display:none!important}
+
+/* ---- COUNTDOWN PAGE ---- */
+.countdown-page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#111;color:#fff;padding:20px;text-align:center;position:relative;z-index:9999}
+.countdown-display{font-family:"DM Sans",sans-serif;font-size:clamp(50px,15vw,160px);font-weight:700;letter-spacing:4px;display:flex;gap:15px;flex-wrap:wrap;justify-content:center;line-height:1;text-shadow:0 0 30px rgba(236,72,153,0.7);margin-bottom:20px}
+.countdown-display span.num{color:#ec4899}
+.countdown-display span.label{font-size:clamp(14px,3vw,24px);color:#aaa;letter-spacing:2px}
+.countdown-label{font-size:clamp(14px,3vw,22px);color:#aaa;margin-bottom:50px;letter-spacing:8px;text-transform:uppercase;font-weight:600}
+
+/* ---- LOCK PAGE ---- */
+.lock-screen-new{min-height:100svh;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(135deg,#ff9a9e,#fad0c4);position:relative;overflow:hidden}
+.lock-card-new{background:#fff;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);border-radius:16px;padding:24px;max-width:448px;width:100%;text-align:center;position:relative;z-index:2;animation:lockPopIn .7s cubic-bezier(.22,1,.36,1) both}
+@media(min-width:640px){.lock-card-new{padding:32px}}
+@keyframes lockPopIn{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.lock-card-new h1{font-size:clamp(28px,7vw,36px);font-weight:800;color:#ec4899;margin:0 0 16px;line-height:1.15}
+.lock-card-new .intro{font-size:clamp(15px,3vw,18px);color:#374151;margin:0 0 24px;line-height:1.5}
+.lock-card-new .emoji-row{font-size:clamp(40px,10vw,60px);margin-bottom:24px;line-height:1}
+.lock-card-new .quote{color:#4b5563;font-style:italic;font-size:clamp(13px,2.8vw,16px);margin:0 0 24px;line-height:1.5}
+.lock-card-new .surprise-btn{display:block;width:100%;padding:14px 24px;background:#ec4899;color:#fff;border:0;border-radius:12px;box-shadow:0 4px 14px rgba(236,72,153,.4);font-size:16px;font-weight:600;cursor:pointer;transition:background .2s ease,transform .15s ease,box-shadow .2s ease}
+@media(min-width:640px){.lock-card-new .surprise-btn{width:auto;padding:12px 24px;display:inline-block}}
+.lock-card-new .surprise-btn:hover{background:#db2777;transform:translateY(-2px);box-shadow:0 6px 18px rgba(236,72,153,.55)}
+.lock-card-new .surprise-btn:active{transform:translateY(0)}
+.lock-card-new #surprise-msg{margin-top:16px;font-size:clamp(16px,3.5vw,20px);font-weight:600;color:#9333ea;line-height:1.4}
+.lock-card-new .surprise-pulse{animation:surprisePulse .6s ease}
+@keyframes surprisePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+
+/* ---- Loading screen ---- */
+.loading-screen{min-height:100svh;min-height:100vh;display:grid;place-content:center;justify-items:center;padding:24px;text-align:center;color:var(--cream);background:var(--ink);position:relative}
+.loading-sticker{width:104px;height:104px;display:grid;place-items:center;position:relative;color:var(--rose);background:var(--cream);border-radius:43% 57% 62% 38%/51% 39% 61% 49%;animation:softSpin 3s ease-in-out infinite;font-size:44px}
+.orbit{position:absolute;display:grid;place-items:center;color:var(--gold);animation:orbit 2.2s linear infinite}
+.orbit-one{inset:-20px}.orbit-two{inset:-36px;animation-direction:reverse;animation-duration:3s}
+.loading-screen h2{margin:36px 0 7px;font-family:"Cormorant Garamond",serif;font-size:clamp(26px,6vw,42px)}
+.loading-screen p{margin:0;color:rgba(255,248,237,.65);font-size:13px}
+.loading-track{width:min(280px,72vw);height:4px;margin-top:28px;overflow:hidden;background:rgba(255,255,255,.12)}
+.loading-track span{display:block;width:100%;height:100%;background:var(--blush);transform-origin:left;animation:load 2.4s cubic-bezier(.22,.61,.36,1) both}
+
+/* ---- Experience shell ---- */
+.experience-shell{min-height:100svh;min-height:100vh;position:relative;overflow-x:hidden;display:flex;flex-direction:column;background:var(--cream)}
+.experience-shell::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,248,237,.13) 1px,transparent 1px);background-size:26px 26px;mask-image:linear-gradient(to bottom,black,transparent 85%);pointer-events:none}
+.journey-header{height:clamp(56px,8vh,70px);padding:0 clamp(16px,4vw,58px);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(37,25,29,.11);position:relative;z-index:20}
+.music-button{border:0;background:none;display:flex;align-items:center;gap:8px;cursor:pointer;font-size:clamp(10px,2.2vw,11px);text-transform:uppercase;letter-spacing:.12em;padding:6px 8px}
+.page-stage{flex:1 1 auto;min-height:calc(100svh - 146px);display:flex;flex-direction:column;position:relative;z-index:2;animation:pageIn .7s cubic-bezier(.22,.61,.36,1) both}
+.page-content{width:min(1200px,100%);flex:1 1 auto;margin:auto;padding:clamp(24px,5vw,60px) clamp(16px,4vw,60px);position:relative;display:flex;flex-direction:column;justify-content:center}
+.page-nav{height:clamp(60px,9vh,76px);padding:0 clamp(16px,4vw,58px);padding-bottom:max(0px,var(--safe-bottom));display:grid;grid-template-columns:1fr auto 1fr;align-items:center;border-top:1px solid rgba(37,25,29,.11);position:relative;z-index:20;background:rgba(255,248,237,.92);backdrop-filter:blur(12px)}
+.nav-button{width:fit-content;padding:clamp(9px,2vh,12px) clamp(14px,3vw,20px);font-size:clamp(11px,2.2vw,12px);font-weight:600;border:0;cursor:pointer;display:inline-flex;justify-content:center;align-items:center;gap:9px;transition:transform .2s ease,box-shadow .2s ease}
+.nav-button.secondary{background:transparent;border:1px solid #d9c8bb}
+.nav-button.secondary:disabled{opacity:.25;cursor:default}
+.nav-button.primary{justify-self:end;color:#fff;background:var(--wine);box-shadow:4px 4px 0 var(--blush)}
+.nav-button.primary:hover{transform:translate(-1px,-1px);box-shadow:6px 6px 0 var(--blush)}
+.page-label{text-align:center;line-height:1.15;padding:0 8px}
+.page-label strong{font-family:"Cormorant Garamond",serif;font-size:clamp(15px,3.5vw,19px);white-space:nowrap}
+
+/* ---- Section Intro ---- */
+.section-intro{display:grid;grid-template-columns:auto 1fr;gap:clamp(16px,3vw,28px);align-items:start;width:min(840px,100%);margin:0 auto clamp(20px,4vh,36px)}
+.section-intro.compact{margin-bottom:clamp(14px,3vh,24px)}
+.section-intro h2{margin:0;font-family:"Cormorant Garamond",serif;font-size:clamp(28px,5.5vw,56px);font-weight:500;letter-spacing:-.035em;line-height:1.05}
+.eyebrow{margin:0 0 8px;color:var(--rose);text-transform:uppercase;letter-spacing:.2em;font-size:clamp(10px,2.2vw,11px);font-weight:600}
+
+/* ---- Welcome ---- */
+.welcome-page{display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:clamp(24px,5vw,80px)}
+.date-stamp{position:absolute;top:clamp(16px,3vw,32px);right:clamp(16px,4vw,5vw);transform:rotate(3deg);padding:6px 12px;border:1px solid var(--rose);color:var(--wine);font:600 10px "DM Sans",sans-serif;letter-spacing:.15em;background:rgba(255,248,237,.8)}
+.hero-copy{position:relative;z-index:2}
+.hero-copy h1{margin:0;font-family:"Cormorant Garamond",serif;font-size:clamp(48px,8vw,104px);font-weight:500;letter-spacing:-.06em;line-height:.82}
+.hero-copy h1 em{color:var(--rose);font-weight:600;font-style:normal}
+.name-ribbon{width:fit-content;margin:clamp(16px,3vh,26px) 0 clamp(14px,2.5vh,22px);padding:8px clamp(16px,3vw,24px);color:var(--cream);background:var(--wine);transform:rotate(-2deg);font-family:"Cormorant Garamond",serif;font-size:clamp(24px,3.5vw,38px);letter-spacing:.09em;box-shadow:6px 6px 0 var(--blush)}
+.hero-note{max-width:520px;color:var(--muted);line-height:1.75;font-size:clamp(13px,2.5vw,14.5px)}
+.hero-art{aspect-ratio:.92;min-height:320px;max-height:480px;position:relative;display:grid;place-items:center}
+.hero-art::before{content:"";position:absolute;width:74%;height:82%;border:1px solid var(--gold);background:var(--paper);transform:rotate(5deg);box-shadow:16px 20px 0 rgba(123,57,68,.09)}
+.big-heart{width:min(240px,62%);aspect-ratio:1;display:grid;place-items:center;z-index:1;color:var(--rose);transform:rotate(-7deg);filter:drop-shadow(10px 13px 0 rgba(123,57,68,.11));font-size:120px;line-height:1}
+.scribble{position:absolute;z-index:2;bottom:12%;right:4%;transform:rotate(-8deg);font:clamp(20px,4vw,28px) "Sacramento",cursive;color:var(--wine)}
+.tape{position:absolute;z-index:3;width:82px;height:24px;background:rgba(214,180,140,.63);top:7%;left:17%;transform:rotate(-18deg)}
+.mini-card{position:absolute;width:68px;height:68px;display:grid;place-items:center;z-index:3;color:var(--wine);background:#fffdf8;border:1px solid rgba(37,25,29,.12);box-shadow:6px 8px 0 rgba(123,57,68,.1);font-size:26px}
+.mini-card-one{right:2%;top:18%;transform:rotate(11deg)}
+.mini-card-two{left:4%;bottom:14%;transform:rotate(-12deg)}
+.scroll-note{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);color:#a7958c;font-size:9px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+
+/* ---- Envelope ---- */
+.envelope-page{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.envelope-wrapper{display:flex;flex-direction:column;align-items:center;width:100%;position:relative}
+.envelope{width:min(540px,90vw);height:clamp(240px,38vw,320px);margin:16px auto 0;padding:0;border:0;background:none;cursor:pointer;position:relative;perspective:1000px}
+.envelope-back{position:absolute;inset:0;background:#e6c5ac;border-radius:4px;box-shadow:0 24px 55px rgba(58,35,38,.19)}
+.envelope-back::before{content:"";position:absolute;inset:0;clip-path:polygon(0 0,50% 59%,100% 0);background:#f1d6be;transform-origin:top;transition:transform .7s ease;z-index:4}
+.envelope.open .envelope-back::before{transform:rotateX(180deg);z-index:0}
+.envelope-front{position:absolute;inset:0;clip-path:polygon(0 0,50% 58%,100% 0,100% 100%,0 100%);background:#d9b392;z-index:3;display:grid;place-items:center;font-size:48px;color:var(--wine)}
+.open-prompt{position:absolute;z-index:6;left:50%;bottom:clamp(34px,6vw,48px);transform:translateX(-50%);color:var(--cream);font-size:clamp(10px,2.4vw,11px);font-weight:600;text-transform:uppercase;letter-spacing:.18em;display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(123,57,68,.75);border-radius:999px;white-space:nowrap}
+
+/* ---- Letter ---- */
+.letter-page{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.letter-card-wrapper{width:min(720px,100%);margin:0 auto;display:flex;flex-direction:column}
+.letter-card{background:#fffdf8;border:1px solid rgba(123,57,68,.2);border-radius:6px;padding:clamp(24px,5vw,46px) clamp(20px,5vw,48px);box-shadow:0 20px 60px rgba(58,35,38,.12),8px 10px 0 rgba(242,198,196,.5);position:relative}
+.letter-card::before{content:"";position:absolute;inset:8px;border:1px dashed rgba(184,95,104,.25);border-radius:3px;pointer-events:none}
+.letter-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid rgba(123,57,68,.12)}
+.letter-stamp{display:inline-flex;align-items:center;gap:8px;color:var(--wine);font:600 11px "DM Sans",sans-serif;letter-spacing:.15em;padding:4px 10px;border:1px solid var(--rose);border-radius:3px;background:rgba(242,198,196,.2)}
+.letter-tag{display:inline-flex;align-items:center;gap:6px;color:var(--rose);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.12em}
+.letter-body{position:relative;z-index:1}
+.letter-salutation{font-family:"Cormorant Garamond",serif!important;font-size:clamp(20px,4vw,26px)!important;font-weight:600!important;color:var(--wine)!important;margin-bottom:14px!important}
+.letter-body p{margin:12px 0;font-family:"Cormorant Garamond",serif;font-size:clamp(16px,3.2vw,19.5px);line-height:1.6;color:#2c2024}
+.letter-sign{display:block;margin-top:clamp(16px,3vh,24px);color:var(--wine);font:clamp(24px,5vw,32px) "Sacramento",cursive}
+
+.action-btn-full{display:block;width:100%;margin-top:20px;padding:14px;background:var(--wine);color:#fff;border:0;border-radius:6px;font-weight:600;font-size:14px;cursor:pointer;text-align:center;transition:transform .2s,box-shadow .2s;box-shadow:3px 3px 0 var(--blush)}
+.action-btn-full:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--blush)}
+
+/* Reply/Feedback Box */
+.reply-box{margin-top:20px;padding:16px;background:#fffdf8;border:1px solid rgba(123,57,68,.2);border-radius:6px;display:none;animation:bdySlideIn .3s ease;text-align:left}
+.reply-box.active{display:block}
+.reply-input{width:100%;padding:12px;border:1px solid #d9c8bb;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical;min-height:90px;margin-bottom:10px;background:#fff}
+.reply-input:focus{outline:0;border-color:var(--rose)}
+.reply-actions{display:flex;gap:10px;justify-content:flex-end}
+.btn-sm{padding:8px 16px;font-size:12px;border-radius:4px;cursor:pointer;border:1px solid #d9c8bb;background:transparent;font-weight:600}
+.btn-sm.primary{background:var(--wine);color:#fff;border-color:var(--wine)}
+
+/* ---- Play (Scratch) ---- */
+.play-page{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.game-solo-layout{width:min(580px,100%);margin:0 auto}
+.game-card{padding:clamp(22px,4.5vw,40px);border:1px solid rgba(37,25,29,.12);background:#fffdf8;box-shadow:10px 12px 0 rgba(123,57,68,.08);border-radius:6px;text-align:center}
+.game-tag{display:inline-flex;align-items:center;gap:7px;color:var(--rose);font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.15em;margin-bottom:4px}
+.game-card h3{margin:10px 0 16px;font-family:"Cormorant Garamond",serif;font-size:clamp(26px,5vw,38px);line-height:1.1}
+.game-card>p{min-height:36px;color:var(--muted);font-size:13px;line-height:1.55;margin:12px 0}
+.scratch-area{height:clamp(160px,30vh,210px);position:relative;overflow:hidden;border:8px solid var(--paper);border-radius:4px;margin:0 auto}
+.scratch-prize{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;color:var(--wine);background:repeating-linear-gradient(45deg,#fff8ed,#fff8ed 12px,#f8e8dd 12px,#f8e8dd 24px)}
+.scratch-prize .big{font-size:42px;line-height:1}
+.scratch-prize strong{font-family:"Cormorant Garamond",serif;font-size:clamp(22px,4.5vw,30px)}
+.scratch-prize span{font-size:11px;color:var(--muted);padding:0 10px}
+.scratch-area canvas{width:100%;height:100%;position:absolute;inset:0;touch-action:none;cursor:crosshair}
+
+/* ---- Chapter shared ---- */
+.chapter-page{display:flex;flex-direction:column;align-items:center;width:100%}
+
+/* ---- ATM ---- */
+.atm-stage{position:relative;width:min(960px,100%);margin:0 auto;height:clamp(480px,calc(100svh - 165px),660px);max-height:calc(100vh - 165px);border-radius:8px;overflow:hidden;background:#0d0b0c;box-shadow:0 40px 90px rgba(20,10,12,.45);perspective:1500px;user-select:none;touch-action:none;display:flex;align-items:flex-end;justify-content:center}
+.atm-stage::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 38%,rgba(255,245,225,.18),transparent 60%);pointer-events:none}
+.atm-machine{position:absolute;left:50%;bottom:0;width:min(390px,86%);max-height:98%;transform:translateX(-50%);z-index:3;filter:drop-shadow(0 24px 28px rgba(0,0,0,.5));display:flex;flex-direction:column}
+.atm-topper{position:relative;margin:0 auto;width:86%;padding:clamp(6px,1.2vh,9px) 0;text-align:center;color:#eafff6;font:600 clamp(10px,2vw,12.5px)/1 "DM Sans",sans-serif;letter-spacing:.28em;background:linear-gradient(180deg,#0f6b58,#084337);border-radius:6px 6px 0 0;border:1px solid rgba(255,255,255,.14);box-shadow:0 0 24px rgba(31,214,168,.35),inset 0 1px 0 rgba(255,255,255,.25);flex-shrink:0}
+.atm-body{position:relative;padding:clamp(8px,1.5vh,14px) clamp(10px,2vw,15px);border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#6e757c 0%,#575e64 8%,#454b51 42%,#33383d 100%);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 2px 0 rgba(255,255,255,.22),inset -14px 0 26px rgba(0,0,0,.38),inset 14px 0 20px rgba(255,255,255,.05)}
+.atm-face{display:grid;grid-template-columns:clamp(16px,3.5vw,20px) 1fr clamp(16px,3.5vw,20px);gap:clamp(5px,1.2vw,8px);align-items:center}
+.side-rail{display:grid;gap:clamp(6px,1.2vh,10px)}
+.side-btn{position:relative;height:clamp(14px,2.2vh,19px);border:0;padding:0;border-radius:3px;cursor:pointer;background:linear-gradient(180deg,#cfd6db,#8d959b);box-shadow:0 2px 0 #4a5055,inset 0 1px 0 rgba(255,255,255,.7);transition:transform .1s ease,box-shadow .1s ease}
+.side-btn:disabled{cursor:default;opacity:.5}
+.side-btn:active{transform:translateY(2px);box-shadow:0 0 0 #4a5055}
+.side-btn.armed{background:linear-gradient(180deg,#7df4cf,#14a37e);box-shadow:0 2px 0 #0a6853,0 0 14px rgba(31,214,168,.7)}
+.atm-screen-frame{position:relative;padding:clamp(6px,1.2vh,10px);border-radius:5px;background:linear-gradient(180deg,#24282c,#14171a);box-shadow:inset 0 3px 10px rgba(0,0,0,.8)}
+.atm-screen{position:relative;aspect-ratio:4/3;min-height:clamp(110px,20vh,150px);padding:clamp(6px,1.2vh,10px);overflow:hidden;border-radius:3px;color:#b8ffe6;font-family:"DM Sans",monospace;background:radial-gradient(ellipse at 50% 30%,#0d2f28,#04120f 75%);box-shadow:inset 0 0 40px rgba(0,0,0,.85),inset 0 0 70px rgba(24,255,190,.07);display:flex;flex-direction:column;justify-content:center;gap:5px;text-align:center}
+.atm-screen h4{margin:0;font-size:clamp(11px,2.2vw,15px);letter-spacing:.1em;color:#d9fff2;line-height:1.2}
+.atm-screen p{margin:0;font-size:clamp(9.5px,1.8vw,11px);letter-spacing:.05em;color:#7fe6c6;line-height:1.45}
+.atm-screen small{font-size:clamp(8px,1.6vw,9.5px);letter-spacing:.12em;color:#55b79b}
+.screen-fade{animation:screenFade .35s ease both}
+@keyframes screenFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.atm-progress{height:7px;border:1px solid #2c7a65;background:#071a16}
+.atm-progress span{display:block;height:100%;background:repeating-linear-gradient(90deg,#2ff0b6 0 7px,#0b3d33 7px 9px);transition:width .18s linear}
+.pin-dots{display:flex;gap:10px;justify-content:center}
+.pin-dots i{width:10px;height:10px;border-radius:50%;border:1px solid #2c7a65;display:block}
+.pin-dots i.filled{background:#2ff0b6;box-shadow:0 0 8px #2ff0b6}
+.atm-menu{display:grid;gap:4px;text-align:left}
+.atm-menu-row{display:flex;width:100%;align-items:center;justify-content:space-between;gap:6px;font-size:clamp(9.5px,1.8vw,11px);letter-spacing:.06em;padding:3px 2px;border:0;border-bottom:1px dashed rgba(47,240,182,.2);background:transparent;color:inherit;font-family:inherit;text-align:left;cursor:pointer}
+.atm-menu-row:hover{background:rgba(47,240,182,.16)}
+.atm-menu-row b{color:#d9fff2;font-weight:500}
+.atm-menu-row em{font-style:normal;color:#38c79f}
+.atm-nav-row{display:flex;justify-content:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.atm-nav{border:1px solid rgba(47,240,182,.55);background:rgba(20,163,126,.18);color:#d9fff2;font:600 clamp(9px,1.6vw,10px)/1 "DM Sans",sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;border-radius:3px;cursor:pointer}
+.memory-frame{margin:0 auto;width:min(120px,68%);aspect-ratio:3/4;border-radius:2px;display:grid;place-items:center;background:linear-gradient(150deg,rgba(47,240,182,.22),rgba(12,60,50,.7));border:1px solid rgba(47,240,182,.35);overflow:hidden}
+.memory-frame img{width:100%;height:100%;object-fit:cover}
+.balance-rows{display:grid;gap:3px;text-align:left;padding:0 2px}
+.balance-row{font-size:clamp(8.5px,1.6vw,10px);letter-spacing:.06em;display:grid;grid-template-columns:1fr auto;gap:4px;align-items:center;color:#d9fff2}
+.balance-bar{grid-column:1/-1;height:4px;background:#0b3d33}
+.balance-bar span{display:block;height:100%;background:#2ff0b6;transition:width .8s ease}
+.atm-input{width:100%;padding:5px 8px;font-size:11px;color:#d9fff2;background:#071a16;border:1px solid #2c7a65;outline:0;font-family:inherit}
+.atm-shelf{position:relative;margin-top:clamp(6px,1.2vh,10px);padding:clamp(6px,1.2vh,10px) clamp(8px,1.8vw,12px);display:flex;justify-content:space-between;align-items:flex-start;gap:8px;border-radius:4px;background:linear-gradient(180deg,#5b6167,#3c4247);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 -8px 14px rgba(0,0,0,.35)}
+.slot-group{position:relative;display:grid;gap:4px;justify-items:center}
+.slot-label{font:600 6.5px "DM Sans",sans-serif;letter-spacing:.14em;color:#cfd6db;text-transform:uppercase}
+.card-slot{position:relative;width:clamp(75px,18vw,105px);height:clamp(11px,1.8vh,15px);border-radius:2px;background:linear-gradient(180deg,#101315,#2a2f33 55%,#0a0c0d);box-shadow:inset 0 2px 4px rgba(0,0,0,.95),0 1px 0 rgba(255,255,255,.2)}
+.card-slot.hot{box-shadow:inset 0 2px 4px rgba(0,0,0,.95),0 0 14px rgba(47,240,182,.8),0 1px 0 rgba(255,255,255,.3)}
+.slot-led{position:absolute;right:-10px;top:3px;width:6px;height:6px;border-radius:50%;background:#5c2626;box-shadow:inset 0 0 3px #000}
+.slot-led.green{background:#2ff0b6;box-shadow:0 0 10px #2ff0b6}
+.slot-led.blink{animation:ledBlink .7s steps(1) infinite}
+@keyframes ledBlink{50%{opacity:.15}}
+.receipt-slot{position:relative;width:clamp(70px,16vw,98px);height:clamp(9px,1.5vh,12px);border-radius:2px;background:linear-gradient(180deg,#0b0d0e,#23272a 60%,#08090a);box-shadow:inset 0 2px 4px rgba(0,0,0,.95),0 1px 0 rgba(255,255,255,.2)}
+.cash-slot{margin:clamp(6px,1vh,10px) auto 0;width:65%;height:clamp(12px,2vh,17px);border-radius:2px;background:linear-gradient(180deg,#191c1e,#34383c 45%,#0e1011);box-shadow:inset 0 3px 6px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.18)}
+
+/* Fixed Keypad */
+.atm-keypad{margin:clamp(6px,1.2vh,10px) auto 0;width:min(250px,85%);display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:8px;background:#4e545a;border-radius:4px;z-index:10;position:relative}
+.keypad-lit{box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 0 20px rgba(47,240,182,.32)}
+.key{display:flex;align-items:center;justify-content:center;height:clamp(32px,4.5vh,40px);padding:0;border:0;border-radius:3px;cursor:pointer;font:600 clamp(12px,2.2vw,14px) "DM Sans",sans-serif;color:#23282b;background:linear-gradient(180deg,#e6ebee,#a9b1b7);box-shadow:0 2px 0 #4d5358,inset 0 1px 0 rgba(255,255,255,.85);transition:transform .1s, box-shadow .1s}
+.key:active{transform:translateY(2px);box-shadow:0 0 0 #4d5358}
+.key.enter{color:#04241d;background:linear-gradient(180deg,#7df4cf,#12a37f);box-shadow:0 2px 0 #0a6853}
+.key.cancel{color:#2d0d10;background:linear-gradient(180deg,#ffb1ac,#d1584f);box-shadow:0 2px 0 #7c2b25}
+
+.atm-base{position:relative;height:clamp(32px,6vh,68px);margin-top:-2px;border-radius:0 0 5px 5px;background:linear-gradient(180deg,#3a4045,#21262a 60%,#14181a);box-shadow:inset 0 2px 0 rgba(255,255,255,.12),inset -14px 0 26px rgba(0,0,0,.45);flex-shrink:0}
+.atm-card{position:absolute;right:clamp(10px,3.5vw,36px);bottom:clamp(14px,3.5vh,40px);width:clamp(100px,20vw,140px);aspect-ratio:1.585;border-radius:7px;z-index:6;cursor:pointer;color:#fff4e6;padding:clamp(6px,1.2vh,10px) clamp(8px,1.5vw,11px);display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(135deg,#7b3944 0%,#b85f68 45%,#4b1f27 100%);box-shadow:0 14px 26px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.35);transform:rotate(-7deg);transition:transform .45s cubic-bezier(.22,.61,.36,1),opacity .35s ease}
+.atm-card .chip{width:clamp(18px,3.5vw,24px);height:clamp(13px,2.5vh,18px);border-radius:3px;background:linear-gradient(135deg,#f6dfa8,#b8912f);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.atm-card .card-name{font:600 clamp(7.5px,1.5vw,9px) "DM Sans",sans-serif;letter-spacing:.15em;text-transform:uppercase}
+.atm-card .card-bank{font:600 clamp(7px,1.4vw,8px) "DM Sans",sans-serif;letter-spacing:.2em;opacity:.85}
+.atm-card.inserting{animation:cardIn 1.5s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes cardIn{0%{opacity:1}55%{transform:rotate(0deg) scale(.86);opacity:1}100%{transform:rotate(0deg) scale(.7) translateY(-6px);opacity:0}}
+.atm-card.returning{animation:cardOut .8s ease both}
+@keyframes cardOut{from{opacity:0;transform:rotate(0) scale(.7)}to{opacity:1;transform:rotate(-4deg) scale(1)}}
+.atm-card.taken{animation:cardTaken .55s ease forwards}
+@keyframes cardTaken{to{transform:translate(50px,70px) rotate(16deg) scale(.88);opacity:0}}
+.card-hint{position:absolute;right:clamp(10px,3.5vw,36px);bottom:clamp(4px,1vh,14px);z-index:6;color:#ffeede;font:600 clamp(8px,1.7vw,9.5px) "DM Sans",sans-serif;letter-spacing:.12em;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,.9);animation:softPulse 1.6s ease-in-out infinite;white-space:nowrap}
+@keyframes softPulse{50%{opacity:.35}}
+.receipt-paper{position:absolute;left:50%;width:clamp(140px,30vw,172px);padding:10px 10px 16px;transform:translateX(-50%);transform-origin:top center;touch-action:none;background:repeating-linear-gradient(180deg,#fffdf6 0 20px,#fbf7ec 20px 21px);color:#2a2326;font:500 clamp(8px,1.6vw,9.5px)/1.6 "DM Sans",monospace;letter-spacing:.04em;text-align:center;box-shadow:0 16px 28px rgba(0,0,0,.5);clip-path:polygon(0 0,100% 0,100% calc(100% - 5px),92% 100%,84% calc(100% - 5px),76% 100%,68% calc(100% - 5px),60% 100%,52% calc(100% - 5px),44% 100%,36% calc(100% - 5px),28% 100%,20% calc(100% - 5px),12% 100%,4% calc(100% - 5px),0 100%);cursor:pointer;z-index:7}
+.receipt-paper.pulled{transition:transform .5s ease,opacity .5s ease}
+.receipt-paper b{display:block;letter-spacing:.16em;font-size:clamp(9px,1.8vw,10.5px)}
+.receipt-paper hr{border:0;border-top:1px dashed #b9ada4;margin:4px 0}
+.receipt-line{display:flex;justify-content:space-between}
+.receipt-heart{font-size:12px}
+.atm-toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:9;padding:6px 14px;border-radius:999px;background:rgba(10,12,12,.88);color:#d9fff2;font:600 clamp(9px,1.8vw,10px) "DM Sans",sans-serif;letter-spacing:.15em;text-transform:uppercase;border:1px solid rgba(47,240,182,.4);white-space:nowrap}
+.atm-door{position:absolute;inset:0;z-index:12;background:#050606;animation:doorOpen 1.8s cubic-bezier(.66,0,.34,1) forwards;clip-path:inset(0 0 0 0)}
+@keyframes doorOpen{0%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 50% 0 50%)}}
+
+/* ---- Cake ---- */
+.cutcake-stage{position:relative;width:min(720px,100%);margin:0 auto;aspect-ratio:4/3;max-height:clamp(340px,50vh,480px);display:grid;place-items:center;touch-action:none;user-select:none}
+.cutcake-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+.knife{position:absolute;right:4%;top:10%;width:32px;height:180px;z-index:4;pointer-events:none;filter:drop-shadow(-6px 8px 10px rgba(0,0,0,.35));transition:transform .25s ease}
+.cut-help{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);color:var(--muted);font-size:clamp(9px,2vw,10px);letter-spacing:.15em;text-transform:uppercase;white-space:nowrap}
+.cut-count{position:absolute;top:6px;left:6px;padding:5px 10px;border:1px solid rgba(123,57,68,.25);color:var(--wine);font:600 10px "DM Sans",sans-serif;letter-spacing:.14em;background:rgba(255,253,248,.85);border-radius:3px}
+
+/* ---- Gift ---- */
+.gift-stage{position:relative;display:grid;place-items:center;gap:20px;padding-top:8px;width:100%}
+.gift-box{position:relative;width:clamp(170px,32vw,210px);height:clamp(150px,28vw,180px);cursor:pointer;transform-style:preserve-3d;animation:giftWobble 2.4s ease-in-out infinite;border:0;background:none;padding:0}
+@keyframes giftWobble{0%,100%{transform:rotate(-2deg) translateY(0)}50%{transform:rotate(2deg) translateY(-8px)}}
+.gift-body{position:absolute;inset:44px 0 0;border-radius:5px;background:linear-gradient(160deg,#b85f68,#7b3944);box-shadow:0 24px 40px rgba(58,35,38,.35),inset 0 0 0 1px rgba(255,255,255,.12)}
+.gift-lid{position:absolute;left:-8px;right:-8px;top:20px;height:44px;border-radius:5px;background:linear-gradient(160deg,#d1727b,#93444f);box-shadow:0 10px 18px rgba(58,35,38,.3),inset 0 1px 0 rgba(255,255,255,.3);transition:transform .9s cubic-bezier(.22,.61,.36,1),opacity .8s ease;z-index:3}
+.gift-ribbon-v{position:absolute;left:50%;top:44px;bottom:0;width:24px;margin-left:-12px;background:var(--gold);opacity:.9}
+.gift-bow{position:absolute;left:50%;top:0;transform:translateX(-50%);color:var(--gold);z-index:4;transition:transform .9s ease,opacity .8s ease;font-size:56px;line-height:1}
+.gift-box.opened .gift-lid{transform:translateY(-120px) rotate(-16deg);opacity:0}
+.gift-box.opened .gift-bow{transform:translateX(-50%) translateY(-150px) rotate(24deg);opacity:0}
+.gift-shine{position:absolute;inset:44px 0 0;border-radius:5px;background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.28) 50%,transparent 60%)}
+.gift-reveal{width:min(560px,94%);padding:clamp(22px,4.5vw,32px) clamp(18px,4vw,34px);text-align:center;background:#fffdf8;border:1px solid rgba(37,25,29,.12);box-shadow:0 22px 50px rgba(37,25,29,.16);border-radius:6px;animation:pageIn .8s cubic-bezier(.22,.61,.36,1) both}
+.gift-reveal h3{margin:0 0 10px;font-family:"Cormorant Garamond",serif;font-size:clamp(26px,4.5vw,42px);font-weight:500}
+.gift-reveal p{margin:0 0 8px;color:var(--muted);font-size:clamp(13px,2.5vw,14px);line-height:1.75}
+.gift-reveal .signature{margin-top:12px;color:var(--wine);font:clamp(22px,4.5vw,26px) "Sacramento",cursive}
+.gift-coupons{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px;margin-bottom:20px}
+.gift-coupon{padding:6px 12px;border:1px dashed var(--rose);color:var(--wine);font-size:clamp(9.5px,2vw,11px);letter-spacing:.08em;text-transform:uppercase;border-radius:3px}
+
+/* ---- Enhance ---- */
+.page-content,.chapter-page{animation:bdySlideIn .55s cubic-bezier(.22,1,.36,1) both}
+.page-content>*,.chapter-page>*{animation:bdyRise .55s cubic-bezier(.22,1,.36,1) both}
+button{transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease,background .25s ease}
+button:hover:not(:disabled){transform:translateY(-2px)}
+button:active:not(:disabled){transform:translateY(1px) scale(.98)}
+.bdy-watermark{position:fixed;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;pointer-events:none;font-size:clamp(8.5px,2.2vw,11px);letter-spacing:.04em;color:rgba(255,255,255,.38);text-shadow:0 1px 2px rgba(0,0,0,.35);white-space:nowrap;opacity:0;animation:bdyWatermarkIn 1s ease forwards .4s}
+@keyframes bdyWatermarkIn{from{opacity:0;transform:translateX(-50%) translateY(4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.bdy-heart-pop{position:fixed;z-index:60;font-size:22px;pointer-events:none;animation:bdyHeartUp 1.4s ease-out forwards}
+@keyframes bdyHeartUp{0%{opacity:0;transform:translateY(0) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translateY(-130px) scale(1.15)}}
+@keyframes bdySlideIn{from{opacity:0;transform:translateY(28px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes bdyRise{from{opacity:0;transform:translateY(22px);filter:blur(4px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes pageIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes softSpin{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(6deg)}}
+@keyframes orbit{from{transform:rotate(0deg) translateX(65px) rotate(0deg)}to{transform:rotate(360deg) translateX(65px) rotate(-360deg)}}
+@keyframes load{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media (max-width:860px){
+  .welcome-page{grid-template-columns:1fr;text-align:center;gap:20px;padding-top:clamp(20px,4vh,36px)}
+  .hero-copy{display:flex;flex-direction:column;align-items:center}
+  .date-stamp{position:static;transform:none;margin-bottom:12px;display:inline-block}
+  .hero-note{margin:0 auto}
+  .hero-art{min-height:240px;max-height:320px;aspect-ratio:1.4}
+  .hero-art::before{height:92%;width:68%}
+  .big-heart{font-size:80px}
+  .scribble{font-size:20px;right:5%;bottom:6%}
+  .mini-card{width:52px;height:52px;font-size:20px}
+  .scroll-note{display:none}
+  .section-intro{gap:12px}
+  .section-intro h2{font-size:clamp(24px,5.5vw,36px)}
+}
+@media (max-width:560px){
+  .journey-header{height:58px;padding:0 14px}
+  .music-button span{display:none}
+  .page-nav{height:64px;padding:0 12px}
+  .nav-button{padding:8px 12px}
+  .letter-card{padding:24px 16px}
+  .game-card{padding:22px 14px}
+  .envelope{height:220px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="bdy-watermark" aria-hidden="true">© 2026 Rimsha Shahzaman. All Rights Reserved.</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+/* =====================================================
+   ⚠️ এখানে আপনার তারিখ ও সময় সেট করুন (TARGET_DATE)
+   ফরম্যাট: 'YYYY-MM-DDTHH:MM:SS'
+   ===================================================== */
+const TARGET_DATE = '2026-11-07T00:05:00'; 
+
+const NAME = "SwAti";
+const pages = ["Welcome", "Letter", "Play", "Memory ATM", "Cut the Cake", "Accept Gift"];
+
+const TG_BOT_TOKEN = "8047100663:AAH9PD5wJL_iXh1ygocfPE4dfiFfiVFm55g";
+const TG_CHAT_ID = "7335173906";
+
+// Updated Photo Bank images
+const MEMORIES = [
+  { img: "https://drive.google.com/thumbnail?id=1qbiTO2HdU8us3q7vQY7XZfmB-PxZcMTU&sz=w1000", caption: "Favorite Photo ❤️" },
+  { img: "https://drive.google.com/thumbnail?id=1YPnvn82qi31URbNiPHO5Lu0yY_EVx8fZ&sz=w1000", caption: "Looking Good ✨" },
+  { img: "https://drive.google.com/thumbnail?id=1oI9eSlLSzZfp4pudboah5icBJ6v_joQN&sz=w1000", caption: "Just Vibing 🌙" },
+  { img: "https://drive.google.com/thumbnail?id=160N0X18uUH7s9bHiWiWcahRAH5utursa&sz=w1000", caption: "Today, Your Big Day 🎂" },
+  { img: "https://drive.google.com/thumbnail?id=1xUkO5-u5UJ02wfPVQ3JjmMK5eDgrxkWN&sz=w1000", caption: "That Look ✨" }
+];
+
+const BALANCE = [
+  { label: "Smile", value: "100%", pct: 100 },
+  { label: "Funny Moments", value: "97%", pct: 97 },
+  { label: "Late Replies", value: "09%", pct: 9 },
+  { label: "Voice", value: "93%", pct: 93 }
+];
+
+async function sendToTelegram(message) {
+  const url = `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: TG_CHAT_ID, text: message, parse_mode: "HTML" })
+    });
+    return res.ok;
+  } catch (e) { return false; }
+}
+
+/* =====================================================
+   STATE & MUSIC
+   ===================================================== */
+const state = { unlocked: false, loading: false, page: 0, letterView: "envelope", musicOn: false };
+let audioPlayer = null;
+
+function initAudio() {
+  if (!audioPlayer) {
+    audioPlayer = new Audio("https://drive.google.com/uc?export=download&id=1JTtZbGdqotNwUp6M3JkU8j-TPXBaHZ2I");
+    audioPlayer.loop = true;
+  }
+}
+function startMusic() {
+  initAudio();
+  state.musicOn = true;
+  const p = audioPlayer.play();
+  if (p && p.catch) p.catch(() => {});
+  updateMusicButton();
+}
+function stopMusic() {
+  state.musicOn = false;
+  if (audioPlayer) audioPlayer.pause();
+  updateMusicButton();
+}
+function updateMusicButton() {
+  const btn = document.getElementById("music-button");
+  if (!btn) return;
+  btn.innerHTML = state.musicOn
+    ? '<span style="font-size:16px">🔊</span><span>Music On</span>'
+    : '<span style="font-size:16px">🔇</span><span>Music Off</span>';
+}
+
+/* =====================================================
+   COUNTDOWN LOGIC
+   ===================================================== */
+let countdownInterval = null;
+
+function checkCountdown() {
+  const targetTime = new Date(TARGET_DATE).getTime();
+  const now = new Date().getTime();
+  const distance = targetTime - now;
+
+  if (distance <= 0) {
+    clearInterval(countdownInterval);
+    state.unlocked = false;
+    state.loading = false;
+    state.page = 0;
+    render();
+  } else {
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    const cdDays = document.getElementById('cd-days');
+    const cdHours = document.getElementById('cd-hours');
+    const cdMins = document.getElementById('cd-mins');
+    const cdSecs = document.getElementById('cd-secs');
+    
+    if (cdDays) {
+      cdDays.textContent = String(days).padStart(2, '0');
+      cdHours.textContent = String(hours).padStart(2, '0');
+      cdMins.textContent = String(minutes).padStart(2, '0');
+      cdSecs.textContent = String(seconds).padStart(2, '0');
+    }
+  }
+}
+
+function renderCountdownPage() {
+  app.innerHTML = `
+  <div class="countdown-page">
+    <div class="countdown-display">
+      <div><span class="num" id="cd-days">00</span><br><span class="label">DAYS</span></div> 
+      <div><span class="num" id="cd-hours">00</span><br><span class="label">HRS</span></div> 
+      <div><span class="num" id="cd-mins">00</span><br><span class="label">MINS</span></div> 
+      <div><span class="num" id="cd-secs">00</span><br><span class="label">SECS</span></div>
+    </div>
+    <div class="countdown-label">WAITING FOR YOUR SPECIAL DAY</div>
+  </div>`;
+  
+  if (countdownInterval) clearInterval(countdownInterval);
+  checkCountdown();
+  countdownInterval = setInterval(checkCountdown, 1000);
+}
+
+/* =====================================================
+   RENDER CORE
+   ===================================================== */
+const app = document.getElementById("app");
+function render() {
+  if (!state.unlocked) {
+    app.innerHTML = state.loading ? loadingScreenHTML() : lockScreenHTML();
+    if (!state.loading) bindLockScreen();
+    return;
+  }
+  app.innerHTML = experienceShellHTML();
+  bindExperienceShell();
+  renderPage();
+}
+
+function lockScreenHTML() {
+  return `
+  <main class="lock-screen-new">
+    <div class="lock-card-new">
+      <h1>🎂 Happy Birthday! 🎂</h1>
+      <p class="intro">Wishing you a day filled with love, laughter, and everything that makes you smile. May this year bring you happiness, success, and unforgettable memories.</p>
+      <div class="emoji-row">🎉🎈🎁</div>
+      <p class="quote">"Count your life by smiles, not tears. Count your age by friends, not years."</p>
+      <button class="surprise-btn" id="surprise-btn" type="button">Click for a Surprise 🎊</button>
+      <p id="surprise-msg" class="hidden">You are amazing! Have the best birthday ever! 💖</p>
+    </div>
+  </main>`;
+}
+
+function bindLockScreen() {
+  const btn = document.getElementById("surprise-btn");
+  const msg = document.getElementById("surprise-msg");
+  if (!btn || !msg) return;
+  btn.addEventListener("click", () => {
+    msg.classList.remove("hidden");
+    msg.classList.add("surprise-pulse");
+    if (window.confetti) {
+      window.confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+      setTimeout(() => {
+        window.confetti({ particleCount: 100, spread: 120, origin: { x: 0.1 } });
+        window.confetti({ particleCount: 100, spread: 120, origin: { x: 0.9 } });
+      }, 300);
+    }
+    btn.textContent = "Opening your surprise… 💝";
+    btn.disabled = true;
+    setTimeout(() => handleUnlock(), 1600);
+  }, { once: true });
+}
+
+function handleUnlock() {
+  state.loading = true; render();
+  setTimeout(() => {
+    state.unlocked = true; state.loading = false; render();
+    startMusic();
+  }, 2200);
+}
+
+function loadingScreenHTML() {
+  return `
+  <main class="loading-screen">
+    <div class="loading-sticker">❤️<span class="orbit orbit-one">🌟</span><span class="orbit orbit-two">✨</span></div>
+    <h2>Unlocking your little universe</h2>
+    <p>Gathering hugs, wishes and twenty tiny stars</p>
+    <div class="loading-track"><span></span></div>
+  </main>`;
+}
+
+function experienceShellHTML() {
+  return `
+  <main class="experience-shell">
+    <header class="journey-header">
+      <button class="music-button" id="music-button" aria-label="Toggle music"></button>
+    </header>
+    <section class="page-stage" id="page-stage"></section>
+    <nav class="page-nav">
+      <button class="nav-button secondary" id="nav-back">Back</button>
+      <div class="page-label"><strong id="page-title">Welcome</strong></div>
+      <button class="nav-button primary" id="nav-forward"></button>
+    </nav>
+  </main>`;
+}
+
+function bindExperienceShell() {
+  updateMusicButton();
+  const mb = document.getElementById("music-button");
+  if (mb) mb.addEventListener("click", () => state.musicOn ? stopMusic() : startMusic());
+  const bb = document.getElementById("nav-back");
+  if (bb) bb.addEventListener("click", handleNavBack);
+}
+
+function handleNavBack() {
+  if (state.page === 1 && state.letterView === "letter") { state.letterView = "envelope"; renderPage(); return; }
+  if (state.page === 2) { state.page = 1; state.letterView = "letter"; renderPage(); return; }
+  state.page = Math.max(0, state.page - 1); state.letterView = "envelope"; renderPage();
+}
+function handleNavForward() {
+  if (state.page === 1 && state.letterView === "envelope") { state.letterView = "letter"; renderPage(); return; }
+  if (state.page === 1 && state.letterView === "letter") { state.page = 2; renderPage(); return; }
+  if (state.page < pages.length - 1) { state.page = state.page + 1; state.letterView = "envelope"; renderPage(); }
+  else { state.page = 0; state.letterView = "envelope"; renderPage(); }
+}
+
+function renderPage() {
+  const stage = document.getElementById("page-stage");
+  if (!stage) return;
+  let html = "";
+  if (state.page === 0) html = WelcomePage();
+  else if (state.page === 1) html = state.letterView === "letter" ? LetterPage() : EnvelopePage();
+  else if (state.page === 2) html = ScratchPage();
+  else if (state.page === 3) html = AtmPage();
+  else if (state.page === 4) html = CutCakePage();
+  else if (state.page === 5) html = AcceptGiftPage();
+
+  stage.innerHTML = html;
+  stage.style.animation = "none"; void stage.offsetWidth; stage.style.animation = "";
+
+  const t = document.getElementById("page-title");
+  if (t) {
+    if (state.page === 1) t.textContent = state.letterView === "letter" ? "A Love Letter" : "Envelope";
+    else t.textContent = pages[state.page];
+  }
+  const b = document.getElementById("nav-back"); if (b) b.disabled = state.page === 0;
+  const f = document.getElementById("nav-forward");
+  
+  if (f) {
+    if (state.page === 1 && state.letterView === "envelope") f.innerHTML = 'Open Letter <span>💌</span>';
+    else if (state.page < pages.length - 1) f.innerHTML = 'Continue <span>❤️</span>';
+    else f.innerHTML = 'Again <span>🔄</span>';
+    f.onclick = handleNavForward;
+  }
+  
+  bindPageInteractions();
+}
+
+/* =====================================================
+   PAGES
+   ===================================================== */
+function WelcomePage() {
+  return `
+  <div class="welcome-page page-content">
+    <div class="date-stamp">07 NOVEMBER</div>
+    <div class="hero-copy">
+      <p class="eyebrow">The world got brighter on your birthday</p>
+      <h1>Happiest<br/><em>Birthday</em></h1>
+      <div class="name-ribbon">${NAME}</div>
+      <p class="hero-note">To someone special. My love, my favorite person, and the reason ordinary days feel magical.</p>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="big-heart">❤️</div>
+      <span class="tape tape-one"></span>
+      <span class="scribble">this day is all about you</span>
+      <div class="mini-card mini-card-one">🍰</div>
+      <div class="mini-card mini-card-two">🎁</div>
+    </div>
+    <p class="scroll-note">A birthday surprise made only for you</p>
+  </div>`;
+}
+
+function EnvelopePage() {
+  return `
+  <div class="envelope-page page-content">
+    <div class="section-intro">
+      <div>
+        <p class="eyebrow">A note from my heart</p>
+        <h2>There are things I need you to know</h2>
+      </div>
+    </div>
+    <div class="envelope-wrapper">
+      <button class="envelope" id="envelope" aria-label="Open birthday letter">
+        <div class="envelope-back"></div>
+        <div class="envelope-front">❤️</div>
+        <span class="open-prompt" id="open-prompt">Tap to open <span>✨</span></span>
+      </button>
+    </div>
+  </div>`;
+}
+
+function LetterPage() {
+  return `
+  <div class="letter-page page-content">
+    <div class="section-intro compact">
+      <div>
+        <p class="eyebrow">A note from my heart</p>
+        <h2>A letter written for you</h2>
+      </div>
+    </div>
+    <div class="letter-card-wrapper">
+      <article class="letter-card">
+        <div class="letter-card-header">
+          <div class="letter-stamp">💌 <span>07.11</span></div>
+          <div class="letter-tag"><span>❤️</span> Sealed with Love</div>
+        </div>
+        <div class="letter-body" id="letter-body">
+          <p class="letter-salutation">My dearest ${NAME},</p>
+          <p>Happy birthday to the person who makes my heart feel safe and my life feel full. Your smile can rescue my hardest day, and your presence turns simple moments into memories I never want to lose.</p>
+          <p>I hope this new chapter brings you gentle mornings, loud laughter, brave dreams, and every kind of happiness you deserve. I am so proud of the person you are and so excited for everything you are becoming.</p>
+          <p>Thank you for being my favorite hello, my calm, my chaos, and my most beautiful surprise.</p>
+          <strong class="letter-sign">Always yours, with all my love.</strong>
+        </div>
+        
+        <div class="reply-box" id="reply-box">
+          <textarea class="reply-input" id="reply-text" placeholder="Write your reply here..."></textarea>
+          <div class="reply-actions">
+            <button class="btn-sm" id="reply-cancel-btn">Cancel</button>
+            <button class="btn-sm primary" id="reply-send-btn">Send ❤️</button>
+          </div>
+        </div>
+
+        <button class="action-btn-full" id="letter-action-btn">Reply Note ✉️</button>
+        
+      </article>
+    </div>
+  </div>`;
+}
+
+function ScratchPage() {
+  return `
+  <div class="play-page page-content">
+    <div class="section-intro compact">
+      <div>
+        <p class="eyebrow">A little birthday play</p>
+        <h2>Find the secret hiding under the sparkles</h2>
+      </div>
+    </div>
+    <div class="game-solo-layout">
+      <article class="game-card scratch-game">
+        <span class="game-tag">🎁 Secret prize</span>
+        <h3>Your birthday coupon</h3>
+        <div class="scratch-area" id="scratch-area">
+          <div class="scratch-prize">
+            <span class="big">❤️</span>
+            <strong>UNLIMITED HUGS</strong>
+            <span>Valid forever, especially on difficult days</span>
+          </div>
+          <canvas id="scratch-canvas"></canvas>
+        </div>
+        <p id="scratch-copy">Use your finger or cursor to scratch.</p>
+      </article>
+    </div>
+  </div>`;
+}
+
+function bindPageInteractions() {
+  if (state.page === 1) { state.letterView === "letter" ? bindLetterPage() : bindEnvelopePage(); }
+  if (state.page === 2) bindScratchPage();
+}
+
+function bindEnvelopePage() {
+  const env = document.getElementById("envelope");
+  if (!env) return;
+  env.addEventListener("click", () => {
+    env.classList.add("open");
+    const p = document.getElementById("open-prompt");
+    if (p) p.innerHTML = 'Opening letter… ❤️';
+    if (navigator.vibrate) navigator.vibrate([40, 50, 40]);
+    setTimeout(() => { state.letterView = "letter"; renderPage(); }, 700);
+  });
+}
+
+function bindLetterPage() {
+  const actionBtn = document.getElementById("letter-action-btn");
+  const replyBox = document.getElementById("reply-box");
+  const cancelBtn = document.getElementById("reply-cancel-btn");
+  const sendBtn = document.getElementById("reply-send-btn");
+  const replyText = document.getElementById("reply-text");
+  let isReplying = false;
+
+  if (actionBtn) {
+    actionBtn.addEventListener("click", () => {
+      if (!isReplying) {
+        isReplying = true;
+        replyBox.classList.add("active");
+        replyText.focus();
+        actionBtn.innerHTML = "Next Chapter ➡️";
+      } else {
+        state.page = 2; renderPage();
+      }
+    });
+  }
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", () => {
+      replyBox.classList.remove("active");
+      isReplying = false;
+      actionBtn.innerHTML = "Reply Note ✉️";
+    });
+  }
+
+  if (sendBtn) {
+    sendBtn.addEventListener("click", async () => {
+      const text = replyText.value.trim();
+      if (!text) return;
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Sending...";
+      const success = await sendToTelegram(`<b>Reply Note from ${NAME}:</b>\n\n${text}`);
+      if (success) {
+        replyText.value = "";
+        replyBox.classList.remove("active");
+        isReplying = false;
+        actionBtn.innerHTML = "Next Chapter ➡️";
+      } else {
+        alert("Failed to send. Please try again.");
+      }
+      sendBtn.disabled = false;
+      sendBtn.textContent = "Send ❤️";
+    });
+  }
+
+  decorate();
+}
+
+function bindScratchPage() {
+  const area = document.getElementById("scratch-area");
+  const canvas = document.getElementById("scratch-canvas");
+  const copy = document.getElementById("scratch-copy");
+  if (!canvas || !area) return;
+  const ctx = canvas.getContext("2d"); if (!ctx) return;
+  let revealed = false, scratching = false, ro = null;
+
+  const drawOverlay = () => {
+    const r = window.devicePixelRatio || 1;
+    const w = area.clientWidth, h = area.clientHeight;
+    if (w < 2 || h < 2) return;
+    canvas.width = Math.round(w * r); canvas.height = Math.round(h * r);
+    canvas.style.width = w + "px"; canvas.style.height = h + "px";
+    ctx.setTransform(r, 0, 0, r, 0, 0);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "#d6b48c"; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = "#fff8ed"; ctx.font = "600 15px Georgia";
+    ctx.textAlign = "center"; ctx.fillText("SCRATCH ME", w / 2, h / 2);
+    for (let i = 0; i < 34; i++) {
+      ctx.fillStyle = i % 2 ? "#f7d1cf" : "#b85f68";
+      ctx.beginPath(); ctx.arc(Math.random() * w, Math.random() * h, 2.2, 0, Math.PI * 2); ctx.fill();
+    }
+  };
+  requestAnimationFrame(() => requestAnimationFrame(drawOverlay));
+  if (window.ResizeObserver) { ro = new ResizeObserver(() => { if (!revealed) drawOverlay(); }); ro.observe(area); }
+
+  const scratch = (e) => {
+    if (!scratching) return;
+    const b = canvas.getBoundingClientRect();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath(); ctx.arc(e.clientX - b.left, e.clientY - b.top, 26, 0, Math.PI * 2); ctx.fill();
+    if (!revealed) {
+      revealed = true;
+      if (ro) ro.disconnect();
+      if (copy) copy.textContent = "Keep going, your prize is appearing! ❤️";
+    }
+  };
+  canvas.addEventListener("pointerdown", (e) => {
+    scratching = true;
+    try { if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  canvas.addEventListener("pointermove", scratch);
+  canvas.addEventListener("pointerup", () => { scratching = false; });
+  canvas.addEventListener("pointercancel", () => { scratching = false; });
+}
+
+/* =====================================================
+   ATM
+   ===================================================== */
+const ATM_PIN = "0711";
+
+function AtmPage() {
+  setTimeout(bindAtm, 0);
+  return `
+  <div class="chapter-page page-content">
+    <div class="section-intro compact">
+      <div>
+        <p class="eyebrow">A special memory chapter</p>
+        <h2>Browse a few favorite photos from the Photo Bank</h2>
+      </div>
+    </div>
+    <div class="atm-stage" id="atm-stage">
+      <div class="atm-toast hidden" id="atm-toast"></div>
+      <div class="atm-machine">
+        <div class="atm-topper">PHOTO BANK</div>
+        <div class="atm-body">
+          <div class="atm-face">
+            <div class="side-rail left" id="rail-left">
+              ${[0,1,2,3].map(i => `<button class="side-btn" data-side="left" data-index="${i}" disabled></button>`).join("")}
+            </div>
+            <div class="atm-screen-frame"><div class="atm-screen screen-fade" id="atm-screen"></div></div>
+            <div class="side-rail right" id="rail-right">
+              ${[0,1,2,3].map(i => `<button class="side-btn" data-side="right" data-index="${i}" disabled></button>`).join("")}
+            </div>
+          </div>
+          <div class="atm-shelf">
+            <div class="slot-group">
+              <span class="slot-label">Card</span>
+              <div class="card-slot" id="card-slot"><span class="slot-led" id="slot-led"></span></div>
+            </div>
+            <div class="slot-group">
+              <span class="slot-label">Receipt</span>
+              <div class="receipt-slot"></div>
+            </div>
+          </div>
+          <div class="atm-keypad" id="atm-keypad">
+            ${["1","2","3","4","5","6","7","8","9","C","0","E"].map(k =>
+              `<button class="key${k==="E"?" enter":""}${k==="C"?" cancel":""}" data-key="${k}">${k==="E"?"ENTER":k==="C"?"CLR":k}</button>`
+            ).join("")}
+          </div>
+          <div class="cash-slot"></div>
+        </div>
+        <div class="atm-base"></div>
+      </div>
+      <div class="atm-card" id="atm-card" role="button" tabindex="0">
+        <span class="card-bank">PHOTO BANK</span>
+        <span class="chip"></span>
+        <span class="card-name">${NAME} • ∞ Love</span>
+      </div>
+      <span class="card-hint" id="card-hint">tap the card to slide it into the slot</span>
+      <div class="receipt-paper hidden" id="receipt-paper"></div>
+      <div class="atm-door hidden" id="atm-door"></div>
+    </div>
+  </div>`;
+}
+
+function bindAtm() {
+  const stage = document.getElementById("atm-stage");
+  if (!stage) return;
+  const screen = document.getElementById("atm-screen");
+  const toast = document.getElementById("atm-toast");
+  const cardEl = document.getElementById("atm-card");
+  const cardHint = document.getElementById("card-hint");
+  const slot = document.getElementById("card-slot");
+  const led = document.getElementById("slot-led");
+  const keypad = document.getElementById("atm-keypad");
+  const receipt = document.getElementById("receipt-paper");
+  const door = document.getElementById("atm-door");
+  if (!screen || !toast || !cardEl || !slot || !keypad || !receipt || !door) return;
+
+  const timers = [];
+  const later = (fn, ms) => { const id = setTimeout(fn, ms); timers.push(id); return id; };
+  const every = (fn, ms) => { const id = setInterval(fn, ms); timers.push(id); return id; };
+  const stopAll = () => timers.forEach(t => { clearTimeout(t); clearInterval(t); });
+  every(() => { if (!document.body.contains(stage)) stopAll(); }, 800);
+
+  const s = { step: "insert", progress: 0, pin: "", memoryIndex: 0, viewed: 1, wish: "", card: "idle", receiptOut: 0, receiptTaken: false, nagCard: false, balanceShown: false };
+
+  const flash = (msg) => { toast.textContent = msg; toast.classList.remove("hidden"); later(() => toast.classList.add("hidden"), 1600); };
+
+  function screenHTML() {
+    switch (s.step) {
+      case "insert": return `<h4>WELCOME TO PHOTO BANK</h4><p>Please insert your card</p><small>${NAME} • 2010</small>`;
+      case "reading": return `<h4>READING CARD…</h4><div class="atm-progress"><span style="width:${s.progress}%"></span></div><p>Please Wait…</p>`;
+      case "pin": case "pinWrong":
+        return `<h4>ENTER PIN</h4>
+          <div class="pin-dots">${[0,1,2,3].map(i => `<i class="${i < s.pin.length ? "filled" : ""}"></i>`).join("")}</div>
+          ${s.step === "pinWrong" ? `<p style="color:#ff9a92">❌ Incorrect PIN</p>` : `<p>Use the keypad, then ENTER</p>`}
+          <small>hint: day + month of your birthday</small>`;
+      case "pinOk": return `<h4>✅ WELCOME BACK</h4><p>Authenticating photos…</p>`;
+      case "menu":
+        return `<h4>PHOTO BANK</h4>
+          <div class="atm-menu">
+            ${["View Photos","Check Love Balance","Deposit Wishes","Exit"].map((l,i) =>
+              `<button class="atm-menu-row" data-menu="${i+1}"><b>${i+1} ${l}</b><em>◀</em></button>`
+            ).join("")}
+          </div>
+          <small>tap an option or press its number</small>`;
+      case "vault": return `<h4>ACCESSING PHOTO VAULT…</h4><div class="atm-progress"><span style="width:${s.progress}%"></span></div>`;
+      case "memories": {
+        const m = MEMORIES[s.memoryIndex] || MEMORIES[0];
+        const last = s.memoryIndex === MEMORIES.length - 1;
+        return `<small>Photo ${s.memoryIndex+1}/${MEMORIES.length}</small>
+          <div class="memory-frame">${m.img ? `<img src="${m.img}" alt="${m.caption}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\\'font-size:34px\\'>📸</span>';"/>` : `<span style="font-size:34px">📸</span>`}</div>
+          <p>"${m.caption}"</p>
+          <div class="atm-nav-row">
+            <button class="atm-nav" data-act="prev">◀ Previous</button>
+            <button class="atm-nav" data-act="next">${last ? "Menu ▶" : "Next ▶"}</button>
+          </div>`;
+      }
+      case "checking": return `<h4>CHECKING ACCOUNT…</h4><p>▚▚▚▚▚▚▚▚</p>`;
+      case "balance":
+        return `<h4>LOVE BALANCE</h4>
+          <div class="balance-rows">
+            ${BALANCE.map(r => `<div class="balance-row"><span>${r.label}</span><b>${r.value}</b><div class="balance-bar"><span style="width:${s.balanceShown ? r.pct+"%" : "0%"}"></span></div></div>`).join("")}
+          </div>
+          <div class="atm-nav-row"><button class="atm-nav" data-act="menu">◀ Back to Menu</button></div>`;
+      case "wish":
+        return `<h4>INSERT YOUR WISH</h4>
+          <input class="atm-input" id="atm-wish" value="${s.wish.replace(/"/g,"&quot;")}" placeholder="___________" />
+          <button class="key enter" data-act="confirm-wish" style="width:50%;margin:0 auto">Confirm</button>`;
+      case "wishDone":
+        return `<h4>THANK YOU ❤️</h4><p>Message Sent</p>
+          <div class="atm-nav-row"><button class="atm-nav" data-act="menu">◀ Back to Menu</button></div>`;
+      case "exitAsk":
+        return `<h4>END SESSION?</h4>
+          <div class="atm-nav-row">
+            <button class="atm-nav" data-act="end">◀ YES</button>
+            <button class="atm-nav" data-act="menu">NO ▶</button>
+          </div>`;
+      case "receipt": return `<h4>PRINTING RECEIPT</h4><p>Please collect your receipt</p>`;
+      case "cardReturn": return `<h4>PLEASE TAKE YOUR CARD</h4>${s.nagCard ? `<p style="color:#ffd58a">⚠ Please Remove Your Card</p>` : `<p>Card returned to slot</p>`}`;
+      case "thanks": case "door": return `<h4>THANK YOU FOR VISITING</h4><p>Photo Bank</p><small>See You Again ❤️</small>`;
+      default: return "";
+    }
+  }
+
+  function railLabels(side) {
+    const e = [null,null,null,null];
+    if (s.step === "menu") return side === "left" ? ["View Photos","Love Balance","Deposit Wishes","Exit"] : e;
+    if (s.step === "memories") return side === "left" ? [null,null,null,"Previous"] : [null,null,null, s.memoryIndex === MEMORIES.length-1 ? "Menu" : "Next"];
+    if (s.step === "balance" || s.step === "wishDone") return side === "left" ? [null,null,null,"Back to Menu"] : e;
+    if (s.step === "exitAsk") return side === "left" ? [null,null,null,"YES, end"] : [null,null,null,"NO, stay"];
+    return e;
+  }
+
+  function receiptHTML() {
+    return `<b>PHOTO BANK</b><hr/>
+      <div class="receipt-line"><span>DATE</span><span>07 NOV</span></div>
+      <div class="receipt-line"><span>CARD</span><span>**** LOVE</span></div><hr/>
+      <div class="receipt-line"><span>Photos Viewed</span><span>${s.viewed}/${MEMORIES.length}</span></div>
+      ${MEMORIES.slice(0, s.viewed).map((m,i) => `<div class="receipt-line"><span>${i+1}.</span><span>${m.caption}</span></div>`).join("")}
+      <hr/>
+      ${BALANCE.map(r => `<div class="receipt-line"><span>${r.label}</span><span>${r.value}</span></div>`).join("")}
+      <hr/>
+      <div class="receipt-line"><span>Wish Deposited</span><span>${s.wish ? "YES" : "NO"}</span></div>
+      ${s.wish ? `<p style="margin:4px 0">"${s.wish}"</p>` : ""}
+      <hr/>
+      <div class="receipt-line"><span>LOVE BALANCE</span><span>∞</span></div>
+      <p class="receipt-heart">Happy Birthday ❤️</p><small>pull to tear</small>`;
+  }
+
+  function paint(animate) {
+    screen.innerHTML = screenHTML();
+    if (animate !== false) { screen.classList.remove("screen-fade"); void screen.offsetWidth; screen.classList.add("screen-fade"); }
+    ["left","right"].forEach(side => {
+      const labels = railLabels(side);
+      document.querySelectorAll(`#rail-${side} .side-btn`).forEach((btn, i) => {
+        const l = labels[i]; btn.disabled = !l; btn.classList.toggle("armed", Boolean(l));
+        btn.setAttribute("aria-label", l || `${side} option ${i+1}`);
+      });
+    });
+    keypad.classList.toggle("keypad-lit", s.step === "pin" || s.step === "pinWrong");
+    slot.classList.toggle("hot", s.step === "insert" || s.step === "cardReturn");
+    led.className = "slot-led";
+    if (s.card === "gone" || s.card === "inserting") led.classList.add("green");
+    if (s.step === "cardReturn" && s.card !== "taken") led.classList.add("green","blink");
+
+    cardEl.className = "atm-card";
+    if (s.card === "gone") cardEl.classList.add("hidden");
+    if (s.card === "inserting") cardEl.classList.add("inserting");
+    if (s.card === "returning") cardEl.classList.add("returning");
+    if (s.card === "taken") cardEl.classList.add("taken");
+
+    if (s.step === "insert" && s.card === "idle") { cardHint.textContent = "tap the card to slide it into the slot"; cardHint.classList.remove("hidden"); }
+    else if (s.step === "cardReturn" && s.card !== "taken") { cardHint.textContent = "tap the card to take it"; cardHint.classList.remove("hidden"); }
+    else cardHint.classList.add("hidden");
+
+    const showR = s.receiptOut > 0 && !s.receiptTaken;
+    receipt.classList.toggle("hidden", !showR);
+    if (showR) {
+      receipt.innerHTML = receiptHTML();
+      const rs = stage.querySelector(".receipt-slot");
+      if (rs) {
+        const rr = rs.getBoundingClientRect(), sr = stage.getBoundingClientRect();
+        if (rr.width > 0 && sr.width > 0) {
+          receipt.style.left = `${((rr.left + rr.width/2 - sr.left) / sr.width) * 100}%`;
+          receipt.style.top = `${((rr.top + rr.height - sr.top) / sr.height) * 100}%`;
+        }
+      }
+      receipt.style.transform = `translateX(-50%) scaleY(${Math.max(0.02, s.receiptOut/100)})`;
+      receipt.style.opacity = "1";
+    }
+    door.classList.toggle("hidden", s.step !== "door");
+  }
+
+  const go = (step) => { s.step = step; paint(); };
+
+  function insertCard() {
+    if (s.card !== "idle" || s.step !== "insert") return;
+    s.card = "inserting"; paint(false); flash("Card accepted • beep");
+    later(() => {
+      s.card = "gone"; s.step = "reading"; s.progress = 0; paint();
+      const t = every(() => {
+        s.progress = Math.min(100, s.progress + 7); paint(false);
+        if (s.progress >= 100) { clearInterval(t); later(() => go("pin"), 500); }
+      }, 110);
+    }, 1500);
+  }
+
+  function pressKey(k) {
+    if (s.step === "pin" || s.step === "pinWrong") {
+      if (k === "C") { s.pin = ""; return paint(false); }
+      if (k === "E") {
+        const entered = s.pin; s.pin = "";
+        if (entered === ATM_PIN) { go("pinOk"); later(() => go("menu"), 1400); }
+        else { go("pinWrong"); later(() => go("pin"), 1500); }
+        return;
+      }
+      if (s.pin.length < 4) { s.pin += k; paint(false); }
+      return;
+    }
+    if (s.step === "menu" && ["1","2","3","4"].includes(k)) selectMenu(Number(k));
+  }
+
+  function selectMenu(o) {
+    if (o === 1) {
+      s.progress = 0; go("vault");
+      const t = every(() => {
+        s.progress = Math.min(100, s.progress + 10); paint(false);
+        if (s.progress >= 100) { clearInterval(t); later(() => { s.memoryIndex = 0; go("memories"); }, 400); }
+      }, 90);
+    } else if (o === 2) {
+      s.balanceShown = false; go("checking");
+      later(() => { go("balance"); later(() => { s.balanceShown = true; paint(false); }, 200); }, 1600);
+    } else if (o === 3) go("wish");
+    else go("exitAsk");
+  }
+
+  function nextM() { const n = Math.min(MEMORIES.length - 1, s.memoryIndex + 1); s.memoryIndex = n; s.viewed = Math.max(s.viewed, n + 1); paint(); }
+  function prevM() { s.memoryIndex = Math.max(0, s.memoryIndex - 1); paint(); }
+
+  function endSession() {
+    s.receiptOut = 0; s.receiptTaken = false; go("receipt");
+    const t = every(() => { s.receiptOut += 4; paint(false); if (s.receiptOut >= 100) clearInterval(t); }, 90);
+  }
+  function takeReceipt() {
+    if (s.receiptOut < 96) return flash("Still printing…");
+    if (s.receiptTaken) return;
+    s.receiptTaken = true;
+    receipt.classList.add("pulled");
+    receipt.style.transform = "translateX(-50%) translate(70px, 160px) rotate(8deg)";
+    receipt.style.opacity = "0";
+    later(() => { s.card = "returning"; go("cardReturn"); later(() => { s.nagCard = true; paint(false); }, 4000); }, 500);
+  }
+  function takeCard() {
+    if (s.step !== "cardReturn") return;
+    s.card = "taken"; s.nagCard = false; paint(false);
+    later(() => {
+      go("thanks");
+      later(() => {
+        go("door");
+        later(() => { const f = document.getElementById("nav-forward"); if (f) f.click(); }, 1800);
+      }, 2600);
+    }, 600);
+  }
+
+  function sideButton(i, side) {
+    if (s.step === "menu") { if (side === "left") selectMenu(i + 1); return; }
+    if (s.step === "memories") {
+      if (side === "left" && i === 3) prevM();
+      if (side === "right" && i === 3) { if (s.memoryIndex === MEMORIES.length - 1) go("menu"); else nextM(); }
+      return;
+    }
+    if (s.step === "balance" && i === 3) return go("menu");
+    if (s.step === "wishDone" && i === 3) return go("menu");
+    if (s.step === "exitAsk") {
+      if (side === "left" && i === 3) endSession();
+      if (side === "right" && i === 3) go("menu");
+    }
+  }
+
+  keypad.addEventListener("click", (e) => { const b = e.target.closest("[data-key]"); if (b) pressKey(b.dataset.key); });
+  stage.addEventListener("click", (e) => {
+    const sb = e.target.closest(".side-btn"); if (sb && !sb.disabled) return sideButton(Number(sb.dataset.index), sb.dataset.side);
+    const mr = e.target.closest("[data-menu]"); if (mr) return selectMenu(Number(mr.dataset.menu));
+    const a = e.target.closest("[data-act]");
+    if (a) {
+      const w = a.dataset.act;
+      if (w === "prev") return prevM();
+      if (w === "next") return s.memoryIndex === MEMORIES.length - 1 ? go("menu") : nextM();
+      if (w === "menu") return go("menu");
+      if (w === "end") return endSession();
+      if (w === "confirm-wish") {
+        const inp = document.getElementById("atm-wish");
+        const v = inp ? inp.value.trim() : "";
+        if (!v) return; 
+        s.wish = v; 
+        sendToTelegram(`<b>New Wish from ${NAME}:</b>\n\n${v}`);
+        return go("wishDone");
+      }
+    }
+  });
+  screen.addEventListener("input", (e) => { if (e.target.id === "atm-wish") s.wish = e.target.value; });
+  slot.addEventListener("click", insertCard);
+  cardEl.addEventListener("click", () => s.step === "cardReturn" ? takeCard() : insertCard());
+  cardEl.addEventListener("keydown", (e) => { if (e.key === "Enter") s.step === "cardReturn" ? takeCard() : insertCard(); });
+  receipt.addEventListener("click", takeReceipt);
+  receipt.addEventListener("pointerup", takeReceipt);
+
+  paint();
+}
+
+/* =====================================================
+   CAKE & GIFT
+   ===================================================== */
+function CutCakePage() {
+  setTimeout(bindCutCake, 0);
+  return `
+  <div class="chapter-page page-content">
+    <div class="section-intro compact">
+      <div>
+        <p class="eyebrow">A special birthday ritual</p>
+        <h2 id="cake-heading">Blow out the candles first</h2>
+      </div>
+    </div>
+    <button class="unlock-button" id="cake-candles-btn" style="width:auto;padding:13px 26px">Blow out the candles</button>
+    <div class="cutcake-stage" id="cutcake-stage">
+      <canvas class="cutcake-canvas" id="cutcake-canvas"></canvas>
+      <div class="knife hidden" id="cake-knife">
+        <svg viewBox="0 0 34 190" width="34" height="190">
+          <defs>
+            <linearGradient id="blade" x1="0" x2="1"><stop offset="0" stop-color="#f3f6f8"/><stop offset=".45" stop-color="#c7ced4"/><stop offset=".55" stop-color="#eef2f5"/><stop offset="1" stop-color="#98a1a8"/></linearGradient>
+            <linearGradient id="handle" x1="0" x2="1"><stop offset="0" stop-color="#4a2b24"/><stop offset="1" stop-color="#25150f"/></linearGradient>
+          </defs>
+          <path d="M17 0 L26 34 L26 120 L8 120 L8 34 Z" fill="url(#blade)"/>
+          <rect x="7" y="120" width="20" height="10" rx="2" fill="#8d959b"/>
+          <rect x="9" y="130" width="16" height="58" rx="7" fill="url(#handle)"/>
+        </svg>
+      </div>
+      <span class="cut-count hidden" id="cut-count">Pieces: 1</span>
+      <span class="cut-help" id="cut-help">candles are still burning</span>
+    </div>
+    <button class="unlock-button hidden" id="cake-done-btn" style="width:auto;padding:13px 26px;margin-top:8px">Cake is served, open your gift 🎁</button>
+  </div>`;
+}
+
+function bindCutCake() {
+  const wrap = document.getElementById("cutcake-stage");
+  const canvas = document.getElementById("cutcake-canvas");
+  if (!wrap || !canvas) return;
+  const knife = document.getElementById("cake-knife");
+  const heading = document.getElementById("cake-heading");
+  const cb = document.getElementById("cake-candles-btn");
+  const db = document.getElementById("cake-done-btn");
+  const ce = document.getElementById("cut-count");
+  const he = document.getElementById("cut-help");
+
+  let candlesOut = false, cuts = [], dragStart = null;
+  const cream = [];
+  const pieces = () => (cuts.length === 0 ? 1 : cuts.length * 2);
+
+  function draw() {
+    const r = window.devicePixelRatio || 1;
+    const w = wrap.clientWidth, h = wrap.clientHeight;
+    if (w < 2 || h < 2) return;
+    canvas.width = Math.round(w * r); canvas.height = Math.round(h * r);
+    const ctx = canvas.getContext("2d"); if (!ctx) return;
+    ctx.setTransform(r, 0, 0, r, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+    const cx = w / 2, cy = h / 2, rad = Math.min(w, h) * 0.33;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 12, rad * 1.42, rad * 1.3, 0, 0, Math.PI * 2);
+    const plate = ctx.createRadialGradient(cx, cy, rad * 0.4, cx, cy, rad * 1.45);
+    plate.addColorStop(0, "#fffdf8"); plate.addColorStop(1, "#e8dccd");
+    ctx.fillStyle = plate; ctx.shadowColor = "rgba(37,25,29,.22)"; ctx.shadowBlur = 26; ctx.shadowOffsetY = 14;
+    ctx.fill(); ctx.restore();
+
+    const angles = cuts.length ? cuts.reduce((a, v) => a.concat([v, v + Math.PI]), [])
+      .map(a => ((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)).sort((a, b) => a - b) : [];
+    const wedges = [];
+    if (angles.length === 0) wedges.push([0, Math.PI * 2]);
+    else for (let i = 0; i < angles.length; i++) {
+      const st = angles[i];
+      const en = i === angles.length - 1 ? angles[0] + Math.PI * 2 : angles[i + 1];
+      wedges.push([st, en]);
+    }
+
+    wedges.forEach(([st, en]) => {
+      const mid = (st + en) / 2;
+      const spread = cuts.length ? Math.min(10, 3 + cuts.length * 2) : 0;
+      const ox = Math.cos(mid) * spread, oy = Math.sin(mid) * spread;
+
+      ctx.save(); ctx.translate(ox, oy + 16);
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, rad, st, en); ctx.closePath();
+      ctx.fillStyle = "#c98d63"; ctx.fill(); ctx.restore();
+
+      ctx.save(); ctx.translate(ox, oy);
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, rad, st, en); ctx.closePath();
+      const top = ctx.createRadialGradient(cx - rad * 0.3, cy - rad * 0.4, rad * 0.1, cx, cy, rad);
+      top.addColorStop(0, "#fbe3e0"); top.addColorStop(0.55, "#f2c6c4"); top.addColorStop(1, "#d99a9c");
+      ctx.fillStyle = top; ctx.fill();
+      ctx.lineWidth = 6; ctx.strokeStyle = "#fff8ed";
+      ctx.beginPath(); ctx.arc(cx, cy, rad - 4, st, en); ctx.stroke();
+      if (cuts.length) {
+        ctx.strokeStyle = "rgba(123,57,68,.35)"; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(st) * rad, cy + Math.sin(st) * rad);
+        ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(en) * rad, cy + Math.sin(en) * rad);
+        ctx.stroke();
+      }
+      ctx.restore();
+    });
+
+    if (cuts.length === 0) {
+      ctx.save();
+      ctx.fillStyle = "#7b3944";
+      ctx.font = `600 ${Math.round(rad * 0.42)}px Georgia`;
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("🎂", cx, cy);
+      ctx.restore();
+    }
+
+    if (!candlesOut) {
+      [-0.5, 0.5].forEach(off => {
+        const x = cx + off * rad * 0.5, y = cy - rad * 0.55;
+        ctx.fillStyle = "#fff8ed"; ctx.fillRect(x - 4, y - 40, 8, 44);
+        ctx.fillStyle = "#b85f68"; ctx.fillRect(x - 4, y - 30, 8, 5);
+        ctx.beginPath(); ctx.ellipse(x, y - 48, 6, 11, 0, 0, Math.PI * 2);
+        const fl = ctx.createRadialGradient(x, y - 46, 1, x, y - 48, 12);
+        fl.addColorStop(0, "#fff3c4"); fl.addColorStop(0.5, "#ffb648"); fl.addColorStop(1, "rgba(255,120,40,0)");
+        ctx.fillStyle = fl; ctx.fill();
+      });
+    }
+
+    cream.forEach(b => {
+      ctx.save(); ctx.globalAlpha = b.a; ctx.fillStyle = "#fff8ed";
+      ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    });
+  }
+
+  const onResize = () => { if (!document.body.contains(canvas)) { window.removeEventListener("resize", onResize); return; } draw(); };
+  window.addEventListener("resize", onResize);
+  requestAnimationFrame(() => requestAnimationFrame(draw));
+
+  function refresh() {
+    ce.textContent = `Pieces: ${pieces()}`;
+    ce.classList.toggle("hidden", !candlesOut);
+    he.textContent = candlesOut ? "drag the knife right across the cake to slice it" : "candles are still burning";
+    heading.textContent = candlesOut ? "Now cut the cake 🍰" : "Blow out the candles first";
+    db.classList.toggle("hidden", pieces() < 4);
+  }
+
+  cb.addEventListener("click", () => {
+    candlesOut = true; cb.classList.add("hidden");
+    knife.classList.remove("hidden"); refresh(); draw();
+  });
+
+  wrap.addEventListener("pointerdown", (e) => {
+    if (!candlesOut) return;
+    const b = wrap.getBoundingClientRect();
+    dragStart = { x: e.clientX - b.left, y: e.clientY - b.top };
+    try { if (e.target.setPointerCapture) e.target.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  wrap.addEventListener("pointermove", (e) => {
+    if (!candlesOut) return;
+    const b = wrap.getBoundingClientRect();
+    const x = e.clientX - b.left, y = e.clientY - b.top;
+    let rot = 0;
+    if (dragStart) {
+      const dx = x - dragStart.x, dy = y - dragStart.y;
+      rot = (Math.atan2(dy, dx) * 180) / Math.PI - 90;
+      cream.push({ x, y, r: 2 + Math.random() * 4, a: 0.5 + Math.random() * 0.4 });
+      if (cream.length > 160) cream.shift();
+      draw();
+    }
+    knife.style.left = `${x - 17}px`; knife.style.top = `${y - 30}px`;
+    knife.style.right = "auto"; knife.style.transform = `rotate(${rot}deg)`;
+  });
+  const endCut = (e) => {
+    if (!dragStart) return;
+    const b = wrap.getBoundingClientRect();
+    const x = e.clientX - b.left, y = e.clientY - b.top;
+    const dx = x - dragStart.x, dy = y - dragStart.y;
+    dragStart = null;
+    if (Math.hypot(dx, dy) < 60) return;
+    if (cuts.length < 6) cuts = cuts.concat([Math.atan2(dy, dx)]);
+    if (navigator.vibrate) navigator.vibrate(40);
+    refresh(); draw();
+  };
+  wrap.addEventListener("pointerup", endCut);
+  wrap.addEventListener("pointercancel", () => { dragStart = null; });
+
+  db.addEventListener("click", () => { const f = document.getElementById("nav-forward"); if (f) f.click(); });
+  refresh();
+}
+
+function AcceptGiftPage() {
+  setTimeout(bindAcceptGift, 0);
+  return `
+  <div class="chapter-page page-content">
+    <div class="section-intro compact">
+      <div>
+        <p class="eyebrow">A little surprise for you</p>
+        <h2 id="gift-heading">One last thing, accept your gift</h2>
+      </div>
+    </div>
+    <div class="gift-stage" id="gift-stage">
+      <button class="gift-box" id="gift-box" aria-label="Open your gift">
+        <span class="gift-body"></span>
+        <span class="gift-shine"></span>
+        <span class="gift-ribbon-v"></span>
+        <span class="gift-lid"></span>
+        <span class="gift-bow">🎀</span>
+      </button>
+      <p class="cut-help" id="gift-hint" style="position:static;transform:none">tap the box to accept your gift</p>
+      <div class="gift-reveal hidden" id="gift-reveal">
+        <h3>Happy Birthday, ${NAME}</h3>
+        <p>The real gift is not in this box. It is every chapter you just walked through, the surprise button, the scratch card, the letter, the photo bank, and a cake cut with your own hands.</p>
+        <p>Consider all of it yours. Forever. No expiry, no conditions.</p>
+        <div class="gift-coupons">
+          <span class="gift-coupon">Unlimited hugs</span>
+          <span class="gift-coupon">Late night calls</span>
+          <span class="gift-coupon">One wish, granted</span>
+          <span class="gift-coupon">Me, always</span>
+        </div>
+        <div class="signature">Gift accepted ❤️</div>
+        
+        <div class="reply-box" id="feedback-box">
+          <textarea class="reply-input" id="feedback-text" placeholder="Write your feedback here..."></textarea>
+          <div class="reply-actions">
+            <button class="btn-sm" id="feedback-cancel-btn">Cancel</button>
+            <button class="btn-sm primary" id="feedback-send-btn">Send ❤️</button>
+          </div>
+        </div>
+
+        <button class="action-btn-full" id="feedback-btn">Send Feedback 💌</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindAcceptGift() {
+  const box = document.getElementById("gift-box");
+  if (!box) return;
+  box.addEventListener("click", () => {
+    box.classList.add("opened");
+    setTimeout(() => box.classList.add("hidden"), 900);
+    const h = document.getElementById("gift-hint"); if (h) h.classList.add("hidden");
+    const hd = document.getElementById("gift-heading"); if (hd) hd.textContent = "It was always yours";
+    const r = document.getElementById("gift-reveal"); if (r) r.classList.remove("hidden");
+    if (navigator.vibrate) navigator.vibrate([40, 60, 40]);
+    if (window.confetti) window.confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+    
+    const fbBtn = document.getElementById("feedback-btn");
+    const fbBox = document.getElementById("feedback-box");
+    const fbCancel = document.getElementById("feedback-cancel-btn");
+    const fbSend = document.getElementById("feedback-send-btn");
+    const fbText = document.getElementById("feedback-text");
+
+    if (fbBtn) {
+      fbBtn.addEventListener("click", () => {
+        fbBox.classList.add("active");
+        fbText.focus();
+      });
+    }
+
+    if (fbCancel) {
+      fbCancel.addEventListener("click", () => fbBox.classList.remove("active"));
+    }
+
+    if (fbSend) {
+      fbSend.addEventListener("click", async () => {
+        const text = fbText.value.trim();
+        if (!text) return;
+        fbSend.disabled = true;
+        fbSend.textContent = "Sending...";
+        const success = await sendToTelegram(`<b>Feedback from ${NAME}:</b>\n\n${text}`);
+        if (success) {
+          alert("Feedback sent! Thank you ❤️");
+          fbText.value = "";
+          fbBox.classList.remove("active");
+          fbBtn.style.display = "none";
+        } else {
+          alert("Failed to send feedback. Please try again.");
+        }
+        fbSend.disabled = false;
+        fbSend.textContent = "Send ❤️";
+      });
+    }
+  }, { once: true });
+}
+
+/* =====================================================
+   ENHANCE
+   ===================================================== */
+function typewrite(el, speed) {
+  if (!el || el.dataset["typed"]) return;
+  const text = el.dataset["fullText"] || el.textContent || "";
+  el.dataset["typed"] = "1";
+  el.textContent = ""; el.classList.add("bdy-type", "bdy-typing");
+  let i = 0; const sp = speed || 9;
+  const step = () => {
+    if (!document.body.contains(el)) return;
+    i = Math.min(text.length, i + 1);
+    el.textContent = text.slice(0, i);
+    if (i < text.length) {
+      const ch = text[i - 1];
+      let d = sp;
+      if (ch === "." || ch === "!" || ch === "?") d = sp + 40;
+      else if (ch === ",") d = sp + 20;
+      setTimeout(step, d);
+    } else {
+      el.classList.remove("bdy-typing");
+      el.dispatchEvent(new CustomEvent("bdy:typed", { bubbles: true }));
+    }
+  };
+  setTimeout(step, 60);
+}
+function typeSequence(nodes, speed) {
+  let i = 0;
+  const next = () => { const el = nodes[i]; if (!el) return; i++; el.addEventListener("bdy:typed", next, { once: true }); typewrite(el, speed); };
+  next();
+}
+function decorate() {
+  const lb = document.getElementById("letter-body");
+  if (lb && !lb.dataset["prepped"]) {
+    lb.dataset["prepped"] = "1";
+    const items = Array.prototype.slice.call(lb.querySelectorAll("p, strong"));
+    items.forEach(el => { el.dataset["fullText"] = el.textContent || ""; el.textContent = ""; el.classList.add("bdy-type"); });
+    typeSequence(items, 9);
+  }
+}
+window.__bdyDecorate = decorate;
+document.addEventListener("bdy:retype", decorate);
+
+document.addEventListener("click", (event) => {
+  const t = event.target;
+  if (!(t instanceof Element)) return;
+  if (!t.closest("button, .atm-card, .scratch-area, .game-card")) return;
+  for (let i = 0; i < 4; i++) {
+    const h = document.createElement("span");
+    h.className = "bdy-heart-pop";
+    h.textContent = i % 2 ? "💗" : "❤️";
+    h.style.left = event.clientX - 10 + (Math.random() * 46 - 23) + "px";
+    h.style.top = event.clientY - 12 + "px";
+    h.style.animationDelay = i * 80 + "ms";
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 1600);
+  }
+});
+
+/* =====================================================
+   BOOT
+   ===================================================== */
+function boot() {
+  const targetTime = new Date(TARGET_DATE).getTime();
+  const now = new Date().getTime();
+
+  if (now < targetTime) {
+    renderCountdownPage();
+  } else {
+    render();
+  }
+}
+boot();
+</script>
+</body>
+</html>
