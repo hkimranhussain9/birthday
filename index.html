@@ -303,7 +303,7 @@ button:active:not(:disabled){transform:translateY(1px) scale(.98)}
    ⚠️ এখানে আপনার তারিখ ও সময় সেট করুন (TARGET_DATE)
    ফরম্যাট: 'YYYY-MM-DDTHH:MM:SS'
    ===================================================== */
-const TARGET_DATE = '2026-1-07T00:05:00'; 
+const TARGET_DATE = '2026-11-07T00:05:00'; 
 
 const NAME = "SwAti";
 const pages = ["Welcome", "Letter", "Play", "Memory ATM", "Cut the Cake", "Accept Gift"];
@@ -569,7 +569,7 @@ function WelcomePage() {
       <p class="eyebrow">The world got brighter on your birthday</p>
       <h1>Happiest<br/><em>Birthday</em></h1>
       <div class="name-ribbon">${NAME}</div>
-      <p class="hero-note">To someone special. My love, my favorite person, and the reason ordinary days feel magical.</p>
+      <p class="hero-note">To someone who makes ordinary days extraordinary and turns little moments into beautiful memories.</p>
     </div>
     <div class="hero-art" aria-hidden="true">
       <div class="big-heart">❤️</div>
@@ -617,11 +617,8 @@ function LetterPage() {
           <div class="letter-tag"><span>❤️</span> Sealed with Love</div>
         </div>
         <div class="letter-body" id="letter-body">
-          <p class="letter-salutation">My dearest ${NAME},</p>
-          <p>Happy birthday to the person who makes my heart feel safe and my life feel full. Your smile can rescue my hardest day, and your presence turns simple moments into memories I never want to lose.</p>
-          <p>I hope this new chapter brings you gentle mornings, loud laughter, brave dreams, and every kind of happiness you deserve. I am so proud of the person you are and so excited for everything you are becoming.</p>
-          <p>Thank you for being my favorite hello, my calm, my chaos, and my most beautiful surprise.</p>
-          <strong class="letter-sign">Always yours, with all my love.</strong>
+          <p class="letter-salutation">Dearest ${NAME},</p>
+          <p>কোনো ধরনের উপহার ছাড়াই তোমাকে আবারও জানাই জন্মদিনের আন্তরিক শুভেচ্ছা।❤️ তোমার জন্য সরাসরি কোনো ফিজিক্যাল গিফটের ব্যবস্থা করতে না পারলেও ভার্চুয়ালি গিফট দেওয়ার ব্যবস্থা করেছি।😎😅 তারপরও যদি ফিজিক্যাল গিফটের প্রয়োজন হয়, তাহলে সরাসরি এসে নিয়ে যেও।❤️ চলে আসলো তোমার জীবনে নতুন আরো একটি বছর , জীবনের আরও একটি নতুন অধ্যায় এবং অসাধারণ কিছু তৈরি করার আরও একটি সুযোগ। এই বছর তোমাকে তোমার স্বপ্নের আরও কাছে নিয়ে যাক, প্রতিটি দিন আনন্দে ভরিয়ে তুলুক এবং তোমার জীবনের প্রতিটি পদক্ষেপ অর্থবহ করে তুলুক।</strong>
         </div>
         
         <div class="reply-box" id="reply-box">
@@ -655,7 +652,7 @@ function ScratchPage() {
         <div class="scratch-area" id="scratch-area">
           <div class="scratch-prize">
             <span class="big">❤️</span>
-            <strong>UNLIMITED HUGS</strong>
+            <strong>SwAti Ahmed Simi shoytaner garo tinni 🙂🙂</strong>
             <span>Valid forever, especially on difficult days</span>
           </div>
           <canvas id="scratch-canvas"></canvas>
@@ -874,7 +871,7 @@ function bindAtm() {
         return `<h4>ENTER PIN</h4>
           <div class="pin-dots">${[0,1,2,3].map(i => `<i class="${i < s.pin.length ? "filled" : ""}"></i>`).join("")}</div>
           ${s.step === "pinWrong" ? `<p style="color:#ff9a92">❌ Incorrect PIN</p>` : `<p>Use the keypad, then ENTER</p>`}
-          <small>hint: day + month of your birthday</small>`;
+          <small>hint: Enter Secret Key</small>`;
       case "pinOk": return `<h4>✅ WELCOME BACK</h4><p>Authenticating photos…</p>`;
       case "menu":
         return `<h4>PHOTO BANK</h4>
@@ -1316,12 +1313,13 @@ function AcceptGiftPage() {
       <p class="cut-help" id="gift-hint" style="position:static;transform:none">tap the box to accept your gift</p>
       <div class="gift-reveal hidden" id="gift-reveal">
         <h3>Happy Birthday, ${NAME}</h3>
-        <p>The real gift is not in this box. It is every chapter you just walked through, the surprise button, the scratch card, the letter, the photo bank, and a cake cut with your own hands.</p>
-        <p>Consider all of it yours. Forever. No expiry, no conditions.</p>
+        <p>এই বাক্সের ভেতরে আসল উপহারটি নেই। আসল উপহার হলো জীবনের সেই প্রতিটি অধ্যায়, যেগুলোর মধ্য দিয়ে তুমি এইমাত্র এগিয়ে এসেছ—সারপ্রাইজ বাটন, স্ক্র্যাচ কার্ড, চিঠি, ছবির সংগ্রহ এবং নিজের হাতে কাটা কেক।
+
+এগুলোর সবকিছুকেই নিজের মনে করো। চিরদিনের জন্য। যার কোনো মেয়াদ শেষ হওয়ার তারিখ নেই, কোনো শর্তও নেই।</p>
         <div class="gift-coupons">
-          <span class="gift-coupon">Unlimited hugs</span>
-          <span class="gift-coupon">Late night calls</span>
-          <span class="gift-coupon">One wish, granted</span>
+          <span class="gift-coupon">Unlimited laughter</span>
+          <span class="gift-coupon">Endless memories</span>
+          
           <span class="gift-coupon">Me, always</span>
         </div>
         <div class="signature">Gift accepted ❤️</div>
