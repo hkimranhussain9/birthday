@@ -20,10 +20,11 @@ canvas{display:block}
 
 /* ---- COUNTDOWN PAGE ---- */
 .countdown-page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#111;color:#fff;padding:20px;text-align:center;position:relative;z-index:9999}
-.countdown-display{font-family:"DM Sans",sans-serif;font-size:clamp(50px,15vw,160px);font-weight:700;letter-spacing:4px;display:flex;gap:15px;flex-wrap:wrap;justify-content:center;line-height:1;text-shadow:0 0 30px rgba(236,72,153,0.7);margin-bottom:20px}
+.countdown-display{font-family:"DM Sans",sans-serif;font-size:clamp(60px,20vw,180px);font-weight:700;letter-spacing:6px;display:flex;justify-content:center;line-height:1;text-shadow:0 0 30px rgba(236,72,153,0.7);margin-bottom:20px}
 .countdown-display span.num{color:#ec4899}
-.countdown-display span.label{font-size:clamp(14px,3vw,24px);color:#aaa;letter-spacing:2px}
 .countdown-label{font-size:clamp(14px,3vw,22px);color:#aaa;margin-bottom:50px;letter-spacing:8px;text-transform:uppercase;font-weight:600}
+
+
 
 /* ---- LOCK PAGE ---- */
 .lock-screen-new{min-height:100svh;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(135deg,#ff9a9e,#fad0c4);position:relative;overflow:hidden}
@@ -372,35 +373,52 @@ function updateMusicButton() {
 }
 
 /* =====================================================
-   COUNTDOWN LOGIC
+   COUNTDOWN LOGIC (3 Minutes First Visit Only)
    ===================================================== */
 let countdownInterval = null;
+const COUNTDOWN_DURATION = 3 * 60 * 1000; // 3 minutes in milliseconds
 
 function checkCountdown() {
-  const targetTime = new Date(TARGET_DATE).getTime();
-  const now = new Date().getTime();
-  const distance = targetTime - now;
+  let startTime = localStorage.getItem('countdown_start');
+  let isCompleted = localStorage.getItem('countdown_completed');
 
-  if (distance <= 0) {
+  if (isCompleted === 'true') {
+    // Already completed, show the app
     clearInterval(countdownInterval);
     state.unlocked = false;
     state.loading = false;
     state.page = 0;
     render();
+    return;
+  }
+
+  const now = new Date().getTime();
+
+  // If no start time saved, this is the first visit. Set it now.
+  if (!startTime) {
+    startTime = now;
+    localStorage.setItem('countdown_start', startTime);
+  }
+
+  const elapsed = now - parseInt(startTime);
+  const distance = COUNTDOWN_DURATION - elapsed;
+
+  if (distance <= 0) {
+    // Time is up, save status and unlock
+    clearInterval(countdownInterval);
+    localStorage.setItem('countdown_completed', 'true');
+    state.unlocked = false;
+    state.loading = false;
+    state.page = 0;
+    render();
   } else {
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const minutes = Math.floor(distance / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    const cdDays = document.getElementById('cd-days');
-    const cdHours = document.getElementById('cd-hours');
     const cdMins = document.getElementById('cd-mins');
     const cdSecs = document.getElementById('cd-secs');
     
-    if (cdDays) {
-      cdDays.textContent = String(days).padStart(2, '0');
-      cdHours.textContent = String(hours).padStart(2, '0');
+    if (cdMins && cdSecs) {
       cdMins.textContent = String(minutes).padStart(2, '0');
       cdSecs.textContent = String(seconds).padStart(2, '0');
     }
@@ -411,12 +429,9 @@ function renderCountdownPage() {
   app.innerHTML = `
   <div class="countdown-page">
     <div class="countdown-display">
-      <div><span class="num" id="cd-days">00</span><br><span class="label">DAYS</span></div> 
-      <div><span class="num" id="cd-hours">00</span><br><span class="label">HRS</span></div> 
-      <div><span class="num" id="cd-mins">00</span><br><span class="label">MINS</span></div> 
-      <div><span class="num" id="cd-secs">00</span><br><span class="label">SECS</span></div>
+      <span class="num" id="cd-mins">03</span>:<span class="num" id="cd-secs">00</span>
     </div>
-    <div class="countdown-label">WAITING FOR YOUR SPECIAL DAY</div>
+    <div class="countdown-label">PLEASE WAIT</div>
   </div>`;
   
   if (countdownInterval) clearInterval(countdownInterval);
@@ -424,6 +439,7 @@ function renderCountdownPage() {
   countdownInterval = setInterval(checkCountdown, 1000);
 }
 
+/* ---- RENDER CORE ---- */
 /* =====================================================
    RENDER CORE
    ===================================================== */
@@ -1452,6 +1468,93 @@ document.addEventListener("click", (event) => {
    BOOT
    ===================================================== */
 function boot() {
+  const isCompleted = localStorage.getItem('countdown_completed');
+  
+  if (isCompleted === 'true') {
+    render(); // Directly open the app
+  } else {
+    renderCountdownPage(); // Show 3 minute countdown
+  }
+}
+boot();
+</script>
+</body>
+</html>
+
+
+
+
+<!-----   sprsific time set er jonno eigula
+
+/* ---- COUNTDOWN PAGE ---- */
+.countdown-page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#111;color:#fff;padding:20px;text-align:center;position:relative;z-index:9999}
+.countdown-display{font-family:"DM Sans",sans-serif;font-size:clamp(50px,15vw,160px);font-weight:700;letter-spacing:4px;display:flex;gap:15px;flex-wrap:wrap;justify-content:center;line-height:1;text-shadow:0 0 30px rgba(236,72,153,0.7);margin-bottom:20px}
+.countdown-display span.num{color:#ec4899}
+.countdown-display span.label{font-size:clamp(14px,3vw,24px);color:#aaa;letter-spacing:2px}
+.countdown-label{font-size:clamp(14px,3vw,22px);color:#aaa;margin-bottom:50px;letter-spacing:8px;text-transform:uppercase;font-weight:600}
+
+
+/* =====================================================
+   COUNTDOWN LOGIC
+   ===================================================== */
+let countdownInterval = null;
+
+function checkCountdown() {
+  const targetTime = new Date(TARGET_DATE).getTime();
+  const now = new Date().getTime();
+  const distance = targetTime - now;
+
+  if (distance <= 0) {
+    clearInterval(countdownInterval);
+    state.unlocked = false;
+    state.loading = false;
+    state.page = 0;
+    render();
+  } else {
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    const cdDays = document.getElementById('cd-days');
+    const cdHours = document.getElementById('cd-hours');
+    const cdMins = document.getElementById('cd-mins');
+    const cdSecs = document.getElementById('cd-secs');
+    
+    if (cdDays) {
+      cdDays.textContent = String(days).padStart(2, '0');
+      cdHours.textContent = String(hours).padStart(2, '0');
+      cdMins.textContent = String(minutes).padStart(2, '0');
+      cdSecs.textContent = String(seconds).padStart(2, '0');
+    }
+  }
+}
+
+function renderCountdownPage() {
+  app.innerHTML = `
+  <div class="countdown-page">
+    <div class="countdown-display">
+      <div><span class="num" id="cd-days">00</span><br><span class="label">DAYS</span></div> 
+      <div><span class="num" id="cd-hours">00</span><br><span class="label">HRS</span></div> 
+      <div><span class="num" id="cd-mins">00</span><br><span class="label">MINS</span></div> 
+      <div><span class="num" id="cd-secs">00</span><br><span class="label">SECS</span></div>
+    </div>
+    <div class="countdown-label">WAITING FOR YOUR SPECIAL DAY</div>
+  </div>`;
+  
+  if (countdownInterval) clearInterval(countdownInterval);
+  checkCountdown();
+  countdownInterval = setInterval(checkCountdown, 1000);
+}
+
+/* =====================================================
+   RENDER CORE
+   ===================================================== */
+
+/* =====================================================
+   BOOT
+   ===================================================== */
+function boot() {
   const targetTime = new Date(TARGET_DATE).getTime();
   const now = new Date().getTime();
 
@@ -1462,6 +1565,5 @@ function boot() {
   }
 }
 boot();
-</script>
-</body>
-</html>
+            
+--->
